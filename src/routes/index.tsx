@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { QrGenerator } from "@/components/qr/QrGenerator";
+import { BrandHeader } from "@/components/qr/BrandHeader";
 import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/")({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="min-h-screen bg-background">
+      <BrandHeader />
       <QrGenerator />
       <Toaster position="top-center" />
     </main>

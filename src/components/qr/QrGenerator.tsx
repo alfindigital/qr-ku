@@ -23,7 +23,6 @@ import {
   Upload,
   Trash2,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -225,25 +224,11 @@ export function QrGenerator() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 lg:py-10">
-      <header className="mb-6 text-center lg:mb-10">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-          <Sparkles className="h-3.5 w-3.5" />
-          Gratis · Tanpa Login
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground lg:text-5xl">
-          Buat QR Code Sendiri
-        </h1>
-        <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground lg:text-base">
-          Cocok untuk warung, toko, dan event. Tinggal isi, atur warna,
-          download — selesai.
-        </p>
-      </header>
-
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="space-y-5">
-          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+          <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
             </h2>
             <Tabs value={type} onValueChange={(v) => setType(v as ContentType)}>
@@ -311,8 +296,8 @@ export function QrGenerator() {
             </Tabs>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+          <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               2. Atur tampilan
             </h2>
 
@@ -435,8 +420,8 @@ export function QrGenerator() {
 
         {/* RIGHT: Preview + actions */}
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)] lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+          <div className="rounded-xl border border-border/60 bg-card p-5 shadow-[var(--shadow-soft)] lg:p-6">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               3. Hasil QR
             </h2>
             <div className="flex items-center justify-center rounded-xl bg-[oklch(0.98_0.005_150)] p-4">
@@ -495,10 +480,6 @@ export function QrGenerator() {
           </div>
         </aside>
       </div>
-
-      <footer className="mt-10 pb-6 text-center text-xs text-muted-foreground">
-        Dibuat untuk UMKM Indonesia · QR statis selamanya
-      </footer>
     </div>
   );
 }
