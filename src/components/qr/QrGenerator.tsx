@@ -227,7 +227,7 @@ export function QrGenerator() {
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="space-y-5">
-          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
             <h2 className="mb-3 text-sm font-bold text-foreground">
               1. Pilih jenis isi
             </h2>
@@ -296,7 +296,7 @@ export function QrGenerator() {
             </Tabs>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm lg:p-6">
+          <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
             <h2 className="mb-3 text-sm font-bold text-foreground">
               2. Atur tampilan
             </h2>
@@ -420,7 +420,7 @@ export function QrGenerator() {
 
         {/* RIGHT: Preview + actions */}
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)] lg:p-6">
+          <div className="rounded-xl border border-border/60 bg-card p-5 shadow-[var(--shadow-soft)] lg:p-6">
             <h2 className="mb-3 text-sm font-bold text-foreground">
               3. Hasil QR
             </h2>
