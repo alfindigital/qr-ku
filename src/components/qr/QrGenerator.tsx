@@ -228,7 +228,7 @@ export function QrGenerator() {
         {/* LEFT: Input + Customize */}
         <div className="space-y-5">
           <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
             </h2>
             <Tabs value={type} onValueChange={(v) => setType(v as ContentType)}>
@@ -297,7 +297,7 @@ export function QrGenerator() {
           </section>
 
           <section className="rounded-xl border border-border/60 bg-card p-5 lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               2. Atur tampilan
             </h2>
 
@@ -421,7 +421,7 @@ export function QrGenerator() {
         {/* RIGHT: Preview + actions */}
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <div className="rounded-xl border border-border/60 bg-card p-5 shadow-[var(--shadow-soft)] lg:p-6">
-            <h2 className="mb-3 text-sm font-bold text-foreground">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               3. Hasil QR
             </h2>
             <div className="flex items-center justify-center rounded-xl bg-[oklch(0.98_0.005_150)] p-4">
