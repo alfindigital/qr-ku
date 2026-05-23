@@ -23,7 +23,6 @@ import {
   Upload,
   Trash2,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -225,20 +224,6 @@ export function QrGenerator() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 lg:py-10">
-      <header className="mb-6 text-center lg:mb-10">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-          <Sparkles className="h-3.5 w-3.5" />
-          Gratis · Tanpa Login
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground lg:text-5xl">
-          Buat QR Code Sendiri
-        </h1>
-        <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground lg:text-base">
-          Cocok untuk warung, toko, dan event. Tinggal isi, atur warna,
-          download — selesai.
-        </p>
-      </header>
-
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="space-y-5">
@@ -495,10 +480,6 @@ export function QrGenerator() {
           </div>
         </aside>
       </div>
-
-      <footer className="mt-10 pb-6 text-center text-xs text-muted-foreground">
-        Dibuat untuk UMKM Indonesia · QR statis selamanya
-      </footer>
     </div>
   );
 }
