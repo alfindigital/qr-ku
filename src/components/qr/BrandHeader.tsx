@@ -1,3 +1,5 @@
+import { ThemeToggle } from "./ThemeToggle";
+
 export function BrandHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
@@ -6,6 +8,9 @@ export function BrandHeader() {
         <span className="font-display text-xl font-bold tracking-tight text-foreground">
           QRku
         </span>
+        <div className="ml-auto">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
