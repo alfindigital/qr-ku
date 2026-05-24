@@ -1,32 +1,67 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type ThemeMode = "light" | "dark" | "system";
+
+const ORDER: ThemeMode[] = ["light", "dark", "system"];
+
+function getSystemDark() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function applyTheme(mode: ThemeMode) {
+  const isDark = mode === "dark" || (mode === "system" && getSystemDark());
+  document.documentElement.classList.toggle("dark", isDark);
+  localStorage.setItem("theme", mode);
+}
+
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const [mode, setMode] = useState<ThemeMode>("system");
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    const saved = localStorage.getItem("theme") as ThemeMode | null;
+    const initial: ThemeMode = saved && ORDER.includes(saved) ? saved : "system";
+    setMode(initial);
+    applyTheme(initial);
+
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => {
+      const current = localStorage.getItem("theme") as ThemeMode | null;
+      if (!current || current === "system") {
+        applyTheme("system");
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
   }, []);
 
-  function toggle() {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+  function cycle() {
+    const next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
+    setMode(next);
+    applyTheme(next);
   }
+
+  const icon =
+    mode === "dark" ? (
+      <Sun className="h-4 w-4" />
+    ) : mode === "light" ? (
+      <Moon className="h-4 w-4" />
+    ) : (
+      <Monitor className="h-4 w-4" />
+    );
+
+  const label =
+    mode === "dark" ? "Mode gelap" : mode === "light" ? "Mode terang" : "Ikuti sistem";
 
   return (
     <button
-      onClick={toggle}
+      onClick={cycle}
       className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background text-foreground transition-colors hover:bg-accent"
-      aria-label="Toggle theme"
+      aria-label={label}
+      title={label}
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {icon}
     </button>
   );
 }
+
