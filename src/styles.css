@@ -140,16 +140,30 @@
     border-color: var(--color-border);
   }
 
+  html {
+    transition: background-color 0.45s ease, color 0.45s ease;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.45s ease, color 0.45s ease;
   }
 
   h1, h2, h3, .font-display {
     font-family: "Space Grotesk", system-ui, sans-serif;
     letter-spacing: -0.02em;
+  }
+
+  /* Smooth theme transition for all common color properties */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.35s;
+    transition-timing-function: ease;
   }
 }
