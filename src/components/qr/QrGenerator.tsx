@@ -424,22 +424,19 @@ export function QrGenerator() {
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               3. Hasil QR
             </h2>
-            <div className="flex items-center justify-center rounded-xl bg-[oklch(0.98_0.005_150)] p-4">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-muted p-4">
               <div
                 ref={ref}
                 className={`flex items-center justify-center ${
                   hasData ? "" : "opacity-30"
                 }`}
               />
+              {caption && (
+                <p className="mt-2 text-center text-sm font-bold tracking-wider text-foreground">
+                  {caption.toUpperCase()}
+                </p>
+              )}
             </div>
-            {caption && (
-              <p
-                className="mt-2 text-center text-sm font-bold tracking-wider"
-                style={{ color }}
-              >
-                {caption.toUpperCase()}
-              </p>
-            )}
 
             <div className="mt-4 space-y-2">
               <Button
