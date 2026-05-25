@@ -72,16 +72,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "QR Warung Pintar generates custom QR codes from URLs, WhatsApp, or text with logos and colors." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "QR Warung Pintar generates custom QR codes from URLs, WhatsApp, or text with logos and colors." },
+      { title: "QRku — QR Code Generator Gratis" },
+      { name: "description", content: "Buat QR Code gratis tanpa login untuk WhatsApp, link, dan toko. Kustom warna, logo, dan bentuk." },
+      { property: "og:title", content: "QRku — QR Code Generator Gratis untuk UMKM" },
+      { property: "og:description", content: "Buat QR Code dari link, WhatsApp, atau tulisan. Mudah, cepat, dan gratis." },
+      { property: "og:site_name", content: "QRku" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "QR Warung Pintar generates custom QR codes from URLs, WhatsApp, or text with logos and colors." },
+      { name: "twitter:title", content: "QRku — QR Code Generator Gratis untuk UMKM" },
+      { name: "twitter:description", content: "Buat QR Code dari link, WhatsApp, atau tulisan. Mudah, cepat, dan gratis." },
     ],
     links: [
       {
