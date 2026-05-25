@@ -379,7 +379,7 @@ export function QrGenerator() {
                       <div className="flex items-center gap-3">
                         <img
                           src={logo}
-                          alt="logo"
+                          alt="Pratinjau logo QR"
                           className="h-12 w-12 rounded border border-border object-contain"
                         />
                         <Button
