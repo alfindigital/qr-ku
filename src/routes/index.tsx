@@ -26,6 +26,7 @@ function Index() {
   return (
     <main className="min-h-screen bg-background">
       <BrandHeader />
+      <h1 className="sr-only">QR Code Generator Gratis untuk UMKM Indonesia</h1>
       <QrGenerator />
       <Toaster position="top-center" />
     </main>
