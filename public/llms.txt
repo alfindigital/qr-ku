@@ -1,0 +1,9 @@
+# QRku
+
+> QR Code Generator gratis tanpa login untuk UMKM Indonesia — warung, toko, dan event.
+
+QRku membantu membuat QR Code statis dari link website, nomor WhatsApp, atau tulisan bebas. Pengguna dapat mengatur warna, bentuk titik, menambahkan logo di tengah, dan teks di bawah QR. Hasil bisa diunduh sebagai PNG resolusi tinggi, disalin, atau dibagikan langsung.
+
+## Pages
+
+- [Beranda](/): Buat QR Code dari link, WhatsApp, atau tulisan dengan kustomisasi warna, bentuk, dan logo.
