@@ -3,7 +3,7 @@ import { BrandHeader } from "@/components/qr/BrandHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle, CheckCircle, ChevronLeft, ExternalLink, Shield } from "lucide-react";
+import { AlertTriangle, ChevronLeft, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/seo-checklist")({
   component: SeoChecklistPage,
@@ -99,4 +99,56 @@ function SeoChecklistPage() {
                       </Label>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Setelah koneksi berhasil, sistem akan meminta token verifikasi dari Google. Token ini akan disematkan sebagai tag {
+                      Setelah koneksi berhasil, sistem akan meminta token verifikasi dari Google. Token ini akan disematkan sebagai tag meta di halaman utama situs untuk membuktikan kepemilikan domain.
+                    </p>
+                    <div className="rounded-lg bg-muted p-3">
+                      <code className="block text-xs text-muted-foreground">
+                        &lt;meta name="google-site-verification" content="..." /&gt;
+                      </code>
+                    </div>
+                  </div>
+                </li>
+
+                <li className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    3
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox id="step3" disabled />
+                      <Label htmlFor="step3" className="font-medium">
+                        Konfirmasi Verifikasi &amp; Tambahkan Situs
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Setelah tag meta dideploy, sistem akan meminta Google untuk memverifikasi situs. Setelah terverifikasi, situs akan ditambahkan ke daftar properti Google Search Console Anda dan sitemap akan dikirim secara otomatis.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Mengapa OAuth Diperlukan?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+                <li>
+                  <strong className="text-foreground">Akses Data Privat:</strong> Google Search Console berisi data performa pencarian yang hanya dapat diakses oleh pemilik situs yang terverifikasi.
+                </li>
+                <li>
+                  <strong className="text-foreground">Verifikasi Kepemilikan:</strong> Google perlu memastikan Anda adalah pemilik sah dari domain qrku.lovable.app sebelum mengizinkan pengelolaan sitemap dan data analitik.
+                </li>
+                <li>
+                  <strong className="text-foreground">Izin Terbatas:</strong> OAuth hanya meminta izin read-only untuk Search Console. Agen Lovable tidak dapat membuat perubahan di akun Google Anda di luar konteks situs ini.
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </main>
+  );
+}
