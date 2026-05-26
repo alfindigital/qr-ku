@@ -3,7 +3,8 @@ import { BrandHeader } from "@/components/qr/BrandHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle, ChevronLeft, Shield } from "lucide-react";
+import { AlertTriangle, ChevronLeft, Shield, XCircle, Clock, Link2Off } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/seo-checklist")({
   component: SeoChecklistPage,
@@ -40,6 +41,44 @@ function SeoChecklistPage() {
             Satu temuan SEO tersisa yang memerlukan persetujuan OAuth untuk diselesaikan.
           </p>
         </div>
+
+        <Card className="mb-6">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-base">Status Google Search Console</CardTitle>
+              <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive">
+                <XCircle className="mr-1 h-3.5 w-3.5" />
+                Tidak Terhubung
+              </Badge>
+            </div>
+            <CardDescription>
+              Ringkasan status koneksi dan sinkronisasi data Search Console untuk situs ini.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-lg border bg-card p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Link2Off className="h-3.5 w-3.5" />
+                Koneksi
+              </div>
+              <div className="mt-1 text-sm font-semibold text-foreground">Belum dihubungkan</div>
+            </div>
+            <div className="rounded-lg border bg-card p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                Sinkronisasi terakhir
+              </div>
+              <div className="mt-1 text-sm font-semibold text-foreground">Belum pernah</div>
+            </div>
+            <div className="rounded-lg border bg-card p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Shield className="h-3.5 w-3.5" />
+                Verifikasi domain
+              </div>
+              <div className="mt-1 text-sm font-semibold text-foreground">Menunggu</div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="mb-6 border-amber-500/30 bg-amber-500/5">
           <CardHeader className="pb-3">
