@@ -137,7 +137,20 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <Outlet />
+        <footer className="mt-auto px-4 pb-4 pt-6 sm:px-6">
+          <div className="flex items-center justify-between border-t pt-3">
+            <span className="text-[11px] text-muted-foreground">
+              qrku.lovable.app
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              by{" "}
+              <span className="font-medium text-foreground">@alfindigital</span>
+            </span>
+          </div>
+        </footer>
+      </div>
     </QueryClientProvider>
   );
 }
