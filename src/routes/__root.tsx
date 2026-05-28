@@ -140,34 +140,29 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Outlet />
-        <footer className="mt-auto px-4 pb-6 pt-4 sm:px-6">
-          <div className="flex items-center justify-center gap-2 text-[11px] text-muted-foreground">
-            <span>
-              by{" "}
-              <span className="font-medium text-foreground">@alfindigital</span>
-            </span>
-            <span className="text-muted-foreground/50">|</span>
-            <div className="flex items-center gap-2">
-              <a href="https://alfindigital.com" target="_blank" rel="noreferrer" aria-label="Website" className="transition-colors hover:text-foreground">
-                <Globe className="h-3.5 w-3.5" />
-              </a>
-              <a href="https://facebook.com/alfindigital" target="_blank" rel="noreferrer" aria-label="Facebook" className="transition-colors hover:text-foreground">
-                <Facebook className="h-3.5 w-3.5" />
-              </a>
-              <a href="https://youtube.com/@alfindigital" target="_blank" rel="noreferrer" aria-label="YouTube" className="transition-colors hover:text-foreground">
-                <Youtube className="h-3.5 w-3.5" />
-              </a>
-              <a href="https://tiktok.com/@alfindigital" target="_blank" rel="noreferrer" aria-label="TikTok" className="transition-colors hover:text-foreground">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.93a8.16 8.16 0 0 0 4.77 1.52V7a4.85 4.85 0 0 1-1.84-.31z"/></svg>
-              </a>
-              <a href="https://x.com/alfindigital" target="_blank" rel="noreferrer" aria-label="X" className="transition-colors hover:text-foreground">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-              <a href="https://t.me/alfindigital" target="_blank" rel="noreferrer" aria-label="Telegram" className="transition-colors hover:text-foreground">
-                <Send className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          </div>
+        <footer className="mt-auto flex items-center justify-center gap-2.5 py-3">
+          <span className="text-[11px] text-muted-foreground">
+            by <span className="font-medium text-foreground">@alfindigital</span>
+          </span>
+          <span className="text-[11px] text-muted-foreground">|</span>
+          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" aria-label="Website alfindigital.com" title="alfindigital.com" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
+          <a href="https://fb.com/alfindigital" target="_blank" rel="noopener noreferrer" aria-label="Facebook @alfindigital" title="Facebook @alfindigital" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <Facebook className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
+          <a href="https://youtube.com/@alfindigital" target="_blank" rel="noopener noreferrer" aria-label="YouTube @alfindigital" title="YouTube @alfindigital" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <Youtube className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
+          <a href="https://tiktok.com/@alfindigital" target="_blank" rel="noopener noreferrer" aria-label="TikTok @alfindigital" title="TikTok @alfindigital" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V9.83a8.16 8.16 0 0 0 4.77 1.52V7.9a4.83 4.83 0 0 1-1.84-1.21Z"/></svg>
+          </a>
+          <a href="https://x.com/alfindigital" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter) @alfindigital" title="X @alfindigital" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25h6.83l4.713 6.231 5.447-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/></svg>
+          </a>
+          <a href="https://t.me/alfidx" target="_blank" rel="noopener noreferrer" aria-label="Telegram @alfidx" title="Telegram @alfidx" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
+            <Send className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
         </footer>
       </div>
     </QueryClientProvider>
