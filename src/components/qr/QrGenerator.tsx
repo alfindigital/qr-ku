@@ -240,7 +240,7 @@ export function QrGenerator() {
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
-        <div className="order-2 space-y-4 sm:space-y-5 lg:order-1">
+        <div className="order-1 space-y-4 sm:space-y-5 lg:order-1">
           <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
@@ -433,7 +433,7 @@ export function QrGenerator() {
         </div>
 
         {/* RIGHT: Preview + actions */}
-        <aside className="order-1 lg:order-2 lg:sticky lg:top-20 lg:self-start">
+        <aside className="order-2 lg:order-2 lg:sticky lg:top-20 lg:self-start">
           <div className="rounded-xl border border-border/60 bg-card p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               3. Hasil QR
