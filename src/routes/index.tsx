@@ -28,17 +28,6 @@ function Index() {
       <BrandHeader />
       <h1 className="sr-only">QR Code Generator Gratis untuk UMKM Indonesia</h1>
       <QrGenerator />
-      <footer className="border-t border-border bg-muted/50 py-6">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between">
-          <span>QRku — QR Code Generator Gratis</span>
-          <Link
-            to="/seo-checklist"
-            className="underline-offset-2 transition-colors hover:text-foreground hover:underline"
-          >
-            SEO Checklist
-          </Link>
-        </div>
-      </footer>
       <Toaster position="top-center" />
     </main>
   );
