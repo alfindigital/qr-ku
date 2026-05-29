@@ -33,9 +33,9 @@ const COLOR_PRESETS = [
   "#16a34a",
   "#2563eb",
   "#dc2626",
-  "#7c3aed",
   "#ea580c",
 ];
+
 
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
@@ -318,13 +318,13 @@ export function QrGenerator() {
             <div className="space-y-5">
               <div>
                 <Label className="mb-2 block">Warna QR</Label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {COLOR_PRESETS.map((c) => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => setColor(c)}
-                      className={`h-10 w-10 rounded-full border-2 transition-transform ${
+                      className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full border-2 transition-transform ${
                         color === c
                           ? "scale-110 border-foreground"
                           : "border-transparent"
@@ -333,14 +333,14 @@ export function QrGenerator() {
                       aria-label={`Warna ${c}`}
                     />
                   ))}
-                  <label className="relative h-10 w-10 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
+                  <label className="relative h-8 w-8 sm:h-9 sm:w-9 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
                     <input
                       type="color"
                       value={color}
                       onChange={(e) => setColor(e.target.value)}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     />
-                    <span className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                    <span className="flex h-full w-full items-center justify-center text-[10px] sm:text-xs text-muted-foreground">
                       +
                     </span>
                   </label>
@@ -452,35 +452,33 @@ export function QrGenerator() {
               )}
             </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 flex items-center gap-2">
               <Button
                 onClick={handleDownload}
                 disabled={!hasData}
-                className="h-12 w-full text-base font-semibold"
+                className="h-11 w-11 shrink-0 p-0"
+                title="Download PNG"
               >
-                <Download className="mr-2 h-5 w-5" />
-                Download PNG
+                <Download className="h-5 w-5" />
               </Button>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  onClick={handleCopy}
-                  disabled={!hasData}
-                  variant="outline"
-                  className="h-11"
-                >
-                  <Copy className="mr-1.5 h-4 w-4" />
-                  Salin
-                </Button>
-                <Button
-                  onClick={handleShare}
-                  disabled={!hasData}
-                  variant="outline"
-                  className="h-11"
-                >
-                  <Share2 className="mr-1.5 h-4 w-4" />
-                  Bagikan
-                </Button>
-              </div>
+              <Button
+                onClick={handleCopy}
+                disabled={!hasData}
+                variant="outline"
+                className="h-11 w-11 shrink-0 p-0"
+                title="Salin gambar"
+              >
+                <Copy className="h-5 w-5" />
+              </Button>
+              <Button
+                onClick={handleShare}
+                disabled={!hasData}
+                variant="outline"
+                className="h-11 w-11 shrink-0 p-0"
+                title="Bagikan"
+              >
+                <Share2 className="h-5 w-5" />
+              </Button>
             </div>
 
             {!hasData && (
