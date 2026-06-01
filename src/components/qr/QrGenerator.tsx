@@ -23,10 +23,18 @@ import {
   Upload,
   Trash2,
   ChevronDown,
+  Mail,
+  Phone,
+  MapPin,
+  Wifi,
+  Sparkles,
+  History,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
 
-type ContentType = "url" | "wa" | "text";
+type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi";
 
 const COLOR_PRESETS = [
   "#111827",
@@ -43,31 +51,158 @@ const SHAPES: { id: DotType; label: string }[] = [
   { id: "dots", label: "Bulat" },
 ];
 
-function buildData(type: ContentType, url: string, waNumber: string, waMsg: string, text: string) {
+type FormState = {
+  url: string;
+  waNumber: string;
+  waMsg: string;
+  text: string;
+  email: string;
+  emailSubject: string;
+  emailBody: string;
+  phone: string;
+  geoLat: string;
+  geoLng: string;
+  geoLink: string;
+  wifiSsid: string;
+  wifiPass: string;
+  wifiEnc: "WPA" | "WEP" | "nopass";
+  wifiHidden: boolean;
+};
+
+const INITIAL_FORM: FormState = {
+  url: "",
+  waNumber: "",
+  waMsg: "",
+  text: "",
+  email: "",
+  emailSubject: "",
+  emailBody: "",
+  phone: "",
+  geoLat: "",
+  geoLng: "",
+  geoLink: "",
+  wifiSsid: "",
+  wifiPass: "",
+  wifiEnc: "WPA",
+  wifiHidden: false,
+};
+
+function escapeWifi(v: string) {
+  return v.replace(/([\\;,":])/g, "\\$1");
+}
+
+function normalizePhone(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  let n = digits;
+  if (n.startsWith("0")) n = "62" + n.slice(1);
+  else if (n.startsWith("8")) n = "62" + n;
+  return n;
+}
+
+function buildData(type: ContentType, f: FormState) {
   if (type === "url") {
-    const v = url.trim();
+    const v = f.url.trim();
     if (!v) return "";
     if (/^https?:\/\//i.test(v)) return v;
     return `https://${v}`;
   }
   if (type === "wa") {
-    const digits = waNumber.replace(/\D/g, "");
-    if (!digits) return "";
-    let normalized = digits;
-    if (normalized.startsWith("0")) normalized = "62" + normalized.slice(1);
-    if (normalized.startsWith("8")) normalized = "62" + normalized;
-    const base = `https://wa.me/${normalized}`;
-    return waMsg.trim() ? `${base}?text=${encodeURIComponent(waMsg.trim())}` : base;
+    const n = normalizePhone(f.waNumber);
+    if (!n) return "";
+    const base = `https://wa.me/${n}`;
+    return f.waMsg.trim() ? `${base}?text=${encodeURIComponent(f.waMsg.trim())}` : base;
   }
-  return text.trim();
+  if (type === "email") {
+    const e = f.email.trim();
+    if (!e) return "";
+    const params = new URLSearchParams();
+    if (f.emailSubject.trim()) params.set("subject", f.emailSubject.trim());
+    if (f.emailBody.trim()) params.set("body", f.emailBody.trim());
+    const q = params.toString();
+    return `mailto:${e}${q ? `?${q}` : ""}`;
+  }
+  if (type === "phone") {
+    const n = normalizePhone(f.phone);
+    return n ? `tel:+${n}` : "";
+  }
+  if (type === "geo") {
+    if (f.geoLink.trim()) return f.geoLink.trim();
+    const lat = parseFloat(f.geoLat);
+    const lng = parseFloat(f.geoLng);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return "";
+    return `geo:${lat},${lng}`;
+  }
+  if (type === "wifi") {
+    const ssid = f.wifiSsid.trim();
+    if (!ssid) return "";
+    const enc = f.wifiEnc;
+    const pass = enc === "nopass" ? "" : f.wifiPass;
+    return `WIFI:T:${enc};S:${escapeWifi(ssid)};P:${escapeWifi(pass)};${
+      f.wifiHidden ? "H:true;" : ""
+    };`;
+  }
+  return f.text.trim();
 }
+
+type TemplateDef = {
+  id: string;
+  label: string;
+  type: ContentType;
+  form: Partial<FormState>;
+};
+
+const TEMPLATES: TemplateDef[] = [
+  {
+    id: "menu",
+    label: "Menu Restoran",
+    type: "url",
+    form: { url: "tokosaya.com/menu" },
+  },
+  {
+    id: "wa",
+    label: "Kontak WhatsApp",
+    type: "wa",
+    form: { waNumber: "08123456789", waMsg: "Halo, saya mau pesan..." },
+  },
+  {
+    id: "wifi",
+    label: "WiFi Cafe",
+    type: "wifi",
+    form: { wifiSsid: "WiFi-Cafe", wifiPass: "cafepass123", wifiEnc: "WPA" },
+  },
+  {
+    id: "toko",
+    label: "Info Toko",
+    type: "text",
+    form: { text: "Warung Bu Siti\nJl. Mawar No.5\nBuka 08.00 - 21.00" },
+  },
+  {
+    id: "email",
+    label: "Email Bisnis",
+    type: "email",
+    form: {
+      email: "info@tokosaya.com",
+      emailSubject: "Pertanyaan Produk",
+    },
+  },
+];
+
+const TAB_LABELS: Record<ContentType, string> = {
+  url: "Link",
+  wa: "WhatsApp",
+  text: "Tulisan",
+  email: "Email",
+  phone: "Telepon",
+  geo: "Lokasi",
+  wifi: "WiFi",
+};
 
 export function QrGenerator() {
   const [type, setType] = useState<ContentType>("url");
-  const [url, setUrl] = useState("");
-  const [waNumber, setWaNumber] = useState("");
-  const [waMsg, setWaMsg] = useState("");
-  const [text, setText] = useState("");
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
 
   const [color, setColor] = useState(COLOR_PRESETS[1]);
   const [bgTransparent, setBgTransparent] = useState(false);
@@ -75,10 +210,9 @@ export function QrGenerator() {
   const [logo, setLogo] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
 
-  const data = useMemo(
-    () => buildData(type, url, waNumber, waMsg, text),
-    [type, url, waNumber, waMsg, text],
-  );
+  const data = useMemo(() => buildData(type, form), [type, form]);
+
+  const history = useQrHistory();
 
   const ref = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -179,6 +313,15 @@ export function QrGenerator() {
       link.click();
       URL.revokeObjectURL(link.href);
       toast.success("QR berhasil diunduh");
+      history.save({
+        type,
+        label: TAB_LABELS[type],
+        data,
+        color,
+        shape: String(shape),
+        caption,
+        form: { ...form },
+      });
     }, "image/png");
   }
 
@@ -236,17 +379,52 @@ export function QrGenerator() {
     reader.readAsDataURL(file);
   }
 
+  function applyTemplate(t: TemplateDef) {
+    setType(t.type);
+    setForm({ ...INITIAL_FORM, ...t.form } as FormState);
+    toast.success(`Template "${t.label}" dimuat`);
+  }
+
+  function loadFromHistory(item: QrHistoryItem) {
+    setType(item.type as ContentType);
+    setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
+    setColor(item.color);
+    setShape(item.shape as DotType);
+    setCaption(item.caption);
+    toast.success("Riwayat dimuat");
+  }
+
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="order-1 space-y-4 sm:space-y-5 lg:order-1">
+          {/* Quick templates */}
+          <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
+            <h2 className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5" />
+              Template cepat
+            </h2>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {TEMPLATES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => applyTemplate(t)}
+                  className="shrink-0 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
           <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
             </h2>
             <Tabs value={type} onValueChange={(v) => setType(v as ContentType)}>
-              <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-muted p-1">
+              <TabsList className="grid h-auto w-full grid-cols-4 gap-1 bg-muted p-1 sm:grid-cols-7">
                 <TabsTrigger value="url" className="flex h-11 flex-col gap-0.5 text-xs">
                   <LinkIcon className="h-4 w-4" />
                   Link
@@ -259,6 +437,22 @@ export function QrGenerator() {
                   <Type className="h-4 w-4" />
                   Tulisan
                 </TabsTrigger>
+                <TabsTrigger value="email" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </TabsTrigger>
+                <TabsTrigger value="phone" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <Phone className="h-4 w-4" />
+                  Telepon
+                </TabsTrigger>
+                <TabsTrigger value="geo" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <MapPin className="h-4 w-4" />
+                  Lokasi
+                </TabsTrigger>
+                <TabsTrigger value="wifi" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <Wifi className="h-4 w-4" />
+                  WiFi
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="url" className="mt-4 space-y-2">
@@ -267,8 +461,8 @@ export function QrGenerator() {
                   id="url"
                   inputMode="url"
                   placeholder="contoh: tokosaya.com"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+                  value={form.url}
+                  onChange={(e) => update("url", e.target.value)}
                   className="h-12 text-base"
                 />
               </TabsContent>
@@ -280,8 +474,8 @@ export function QrGenerator() {
                     id="wa"
                     inputMode="tel"
                     placeholder="08123456789"
-                    value={waNumber}
-                    onChange={(e) => setWaNumber(e.target.value)}
+                    value={form.waNumber}
+                    onChange={(e) => update("waNumber", e.target.value)}
                     className="h-12 text-base"
                   />
                 </div>
@@ -290,8 +484,8 @@ export function QrGenerator() {
                   <Textarea
                     id="wamsg"
                     placeholder="Halo, saya mau pesan..."
-                    value={waMsg}
-                    onChange={(e) => setWaMsg(e.target.value)}
+                    value={form.waMsg}
+                    onChange={(e) => update("waMsg", e.target.value)}
                     rows={2}
                   />
                 </div>
@@ -302,10 +496,147 @@ export function QrGenerator() {
                 <Textarea
                   id="text"
                   placeholder="Contoh: Warung Bu Siti, Jl. Mawar No.5"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
+                  value={form.text}
+                  onChange={(e) => update("text", e.target.value)}
                   rows={3}
                 />
+              </TabsContent>
+
+              <TabsContent value="email" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Alamat Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    inputMode="email"
+                    placeholder="nama@email.com"
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="esub">Subjek (opsional)</Label>
+                  <Input
+                    id="esub"
+                    placeholder="Pertanyaan produk"
+                    value={form.emailSubject}
+                    onChange={(e) => update("emailSubject", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ebody">Isi pesan (opsional)</Label>
+                  <Textarea
+                    id="ebody"
+                    placeholder="Halo, saya ingin bertanya..."
+                    value={form.emailBody}
+                    onChange={(e) => update("emailBody", e.target.value)}
+                    rows={2}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="phone" className="mt-4 space-y-2">
+                <Label htmlFor="tel">Nomor Telepon</Label>
+                <Input
+                  id="tel"
+                  inputMode="tel"
+                  placeholder="08123456789"
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                  className="h-12 text-base"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Scan untuk langsung menelepon nomor ini.
+                </p>
+              </TabsContent>
+
+              <TabsContent value="geo" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="glink">Link Google Maps (opsional)</Label>
+                  <Input
+                    id="glink"
+                    placeholder="https://maps.google.com/?q=..."
+                    value={form.geoLink}
+                    onChange={(e) => update("geoLink", e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="lat">Latitude</Label>
+                    <Input
+                      id="lat"
+                      inputMode="decimal"
+                      placeholder="-6.2088"
+                      value={form.geoLat}
+                      onChange={(e) => update("geoLat", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lng">Longitude</Label>
+                    <Input
+                      id="lng"
+                      inputMode="decimal"
+                      placeholder="106.8456"
+                      value={form.geoLng}
+                      onChange={(e) => update("geoLng", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Jika link diisi, lat/lng diabaikan.
+                </p>
+              </TabsContent>
+
+              <TabsContent value="wifi" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="ssid">Nama WiFi (SSID)</Label>
+                  <Input
+                    id="ssid"
+                    placeholder="WiFi-Cafe"
+                    value={form.wifiSsid}
+                    onChange={(e) => update("wifiSsid", e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="wpass">Password</Label>
+                  <Input
+                    id="wpass"
+                    placeholder="Kosongkan jika tidak ada"
+                    value={form.wifiPass}
+                    onChange={(e) => update("wifiPass", e.target.value)}
+                    disabled={form.wifiEnc === "nopass"}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Tipe Keamanan</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["WPA", "WEP", "nopass"] as const).map((enc) => (
+                      <button
+                        key={enc}
+                        type="button"
+                        onClick={() => update("wifiEnc", enc)}
+                        className={`h-10 rounded-lg border-2 text-xs font-medium transition-colors ${
+                          form.wifiEnc === enc
+                            ? "border-primary bg-primary/10 text-foreground"
+                            : "border-border bg-background text-muted-foreground"
+                        }`}
+                      >
+                        {enc === "nopass" ? "Tanpa Password" : enc}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={form.wifiHidden}
+                    onChange={(e) => update("wifiHidden", e.target.checked)}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  Jaringan tersembunyi (hidden SSID)
+                </label>
               </TabsContent>
             </Tabs>
           </section>
@@ -434,6 +765,7 @@ export function QrGenerator() {
 
         {/* RIGHT: Preview + actions */}
         <aside className="order-2 lg:order-2 lg:sticky lg:top-20 lg:self-start">
+          <div className="space-y-4">
           <div className="rounded-xl border border-border/60 bg-card p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               3. Hasil QR
@@ -486,6 +818,63 @@ export function QrGenerator() {
                 Isi dulu kontennya di atas
               </p>
             )}
+          </div>
+
+          {history.items.length > 0 && (
+            <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <History className="h-3.5 w-3.5" />
+                  Riwayat QR
+                </h2>
+                <button
+                  type="button"
+                  onClick={history.clear}
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Hapus semua
+                </button>
+              </div>
+              <ul className="space-y-2 max-h-72 overflow-y-auto">
+                {history.items.map((it) => (
+                  <li
+                    key={it.id}
+                    className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2"
+                  >
+                    <div
+                      className="h-8 w-8 shrink-0 rounded"
+                      style={{ backgroundColor: it.color }}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-foreground">
+                        {it.label}
+                      </p>
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {it.data}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => loadFromHistory(it)}
+                      className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      title="Muat ulang"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => history.remove(it.id)}
+                      className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-destructive"
+                      title="Hapus"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           </div>
         </aside>
       </div>
