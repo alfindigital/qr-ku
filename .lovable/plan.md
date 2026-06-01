@@ -1,98 +1,52 @@
+## Yang akan dikerjakan
 
-# QR Code Generator — Plan
+Menerapkan ide 1, 2, dan 3 dari diskusi sebelumnya ke QR Generator.
 
-Aplikasi 1 halaman, mobile-first, bahasa Indonesia sederhana. Cocok untuk warung, toko kecil, dan event di desa. Tanpa login, tanpa backend — semua jalan di browser.
+### 1. Tipe konten baru (Email, Telepon, Lokasi, WiFi)
 
-## Prinsip
-- **Mobile-first**: layout vertikal, tombol besar, font jelas.
-- **Bahasa simpel**: "Link Website", "WhatsApp", "Tulisan" — bukan istilah teknis.
-- **Hasil instan**: QR ter-update otomatis tiap input berubah (live preview).
-- **Tanpa login, tanpa simpan data**: semua di sisi browser.
+Tambah 4 tab baru di `QrGenerator.tsx` selain Link / WhatsApp / Tulisan:
 
-## Fitur Inti (yang penting saja)
+- **Email** → format `mailto:alamat@email.com?subject=...&body=...`
+  - Input: alamat email, subjek (opsional), isi pesan (opsional)
+- **Telepon** → format `tel:+62812...`
+  - Input: nomor telepon (auto-normalisasi 0 → 62)
+- **Lokasi** → format `geo:lat,lng` atau link Google Maps
+  - Input: latitude, longitude, atau alternatif "tempel link Maps"
+- **WiFi** → format `WIFI:T:WPA;S:NamaWifi;P:Password;;`
+  - Input: nama jaringan (SSID), password, tipe keamanan (WPA/WEP/None), hidden (checkbox)
 
-### 1. Tipe Konten (3 tab saja)
-- **Link Website** — input URL (auto-tambah `https://` kalau lupa)
-- **WhatsApp** — input nomor HP (auto-format `62...`) + pesan opsional → generate `wa.me/62xxx?text=...`
-- **Tulisan** — bebas (alamat warung, info promo, dll)
+Karena tab jadi 7, ubah `TabsList` jadi grid 4 kolom × 2 baris di mobile, dan tetap responsif di desktop. Setiap tab pakai ikon Lucide (`Mail`, `Phone`, `MapPin`, `Wifi`).
 
-Tidak perlu: vCard, WiFi, PDF, Event, dll — terlalu rumit untuk target user.
+Update `buildData()` agar menangani semua tipe baru, dan state form masing-masing (mis. `email`, `emailSubject`, `phone`, `lat`, `lng`, `wifiSsid`, dst).
 
-### 2. Kustomisasi (minimal, jelas)
-- **Warna QR**: 6 preset warna (hitam, biru, hijau, merah, ungu, oranye) + color picker
-- **Warna Background**: putih / transparan
-- **Bentuk titik (dots)**: kotak / bulat / rounded (3 pilihan saja)
-- **Logo di tengah**: upload gambar dari HP (opsional) — auto-resize & beri ruang putih
-- **Teks di bawah QR**: opsional (misal "SCAN MENU" atau nama warung)
+### 2. Riwayat QR (localStorage)
 
-### 3. Output
-- **Tombol Download PNG** (resolusi tinggi 1024px, siap cetak)
-- **Tombol Salin Gambar** (copy to clipboard untuk paste ke WA/IG)
-- **Tombol Bagikan** (Web Share API native — share langsung ke WA di HP)
+- Simpan QR ke `localStorage` saat user menekan tombol Download (atau tombol baru "Simpan ke riwayat").
+- Field yang disimpan: id, type, data mentah form, warna, bentuk, caption, timestamp.
+- Tambah section "Riwayat QR" di bawah panel hasil (atau sebagai panel terpisah collapsible) yang menampilkan daftar QR tersimpan:
+  - Thumbnail kecil (re-render dari data), label tipe, preview konten (truncate), tanggal.
+  - Aksi: **Muat ulang** (isi kembali form), **Hapus**.
+- Batas 20 entri terakhir (FIFO).
+- Buat hook baru `src/hooks/use-qr-history.ts` untuk enkapsulasi load/save/delete.
 
-## Struktur Halaman (mobile-first)
+### 3. Template cepat
 
-```text
-┌─────────────────────────┐
-│  Header (logo + judul)  │
-├─────────────────────────┤
-│  [Link] [WA] [Tulisan]  │  ← tab pilih tipe
-├─────────────────────────┤
-│  Input field besar      │
-├─────────────────────────┤
-│   ┌───────────────┐     │
-│   │   QR PREVIEW  │     │  ← live, di tengah
-│   │   (+ teks)    │     │
-│   └───────────────┘     │
-├─────────────────────────┤
-│  Kustomisasi (collapse) │
-│   - Warna (swatches)    │
-│   - Bentuk titik        │
-│   - Logo (upload)       │
-│   - Teks bawah          │
-├─────────────────────────┤
-│ [Download] [Salin] [Bagi]│
-└─────────────────────────┘
-```
+- Tambah baris "Template cepat" di atas tab pilih jenis isi, berisi tombol chip:
+  - **Menu Restoran** → tipe Link, placeholder URL menu digital.
+  - **Kontak WhatsApp** → tipe WhatsApp, contoh nomor + pesan "Halo, saya mau pesan...".
+  - **WiFi Cafe** → tipe WiFi dengan SSID/password placeholder.
+  - **Info Toko** → tipe Tulisan dengan format nama + alamat.
+  - **Email Bisnis** → tipe Email dengan subjek default.
+- Klik template = set `type` + isi form dengan nilai contoh (user tinggal edit).
+- Tombol berbentuk chip kecil horizontal-scroll di mobile.
 
-Di desktop: 2 kolom (kiri input+kustomisasi, kanan preview sticky).
+## Catatan teknis
 
-## Stack Teknis
+- File utama yang diubah: `src/components/qr/QrGenerator.tsx`.
+- File baru: `src/hooks/use-qr-history.ts`, opsional `src/components/qr/QrHistory.tsx` dan `src/components/qr/QuickTemplates.tsx` agar `QrGenerator.tsx` tidak terlalu besar.
+- Tidak ada perubahan backend — semua client-side (localStorage).
+- Validasi input ringan: email format, nomor telepon angka, lat/lng numerik dengan range.
 
-- **Library QR**: `qr-code-styling` (npm) — sudah support warna, bentuk dots, logo embed, export PNG. Ringan, no backend.
-- **Route**: ganti isi `src/routes/index.tsx` (homepage). Komponen dipecah:
-  - `src/components/qr/TypeTabs.tsx`
-  - `src/components/qr/ContentInput.tsx` (switch berdasarkan tipe)
-  - `src/components/qr/QrPreview.tsx` (wrap qr-code-styling)
-  - `src/components/qr/Customizer.tsx` (warna, bentuk, logo, teks)
-  - `src/components/qr/ActionButtons.tsx` (download/salin/share)
-- **State**: `useState` lokal — tidak butuh global store.
-- **UI**: shadcn (Tabs, Input, Button, Slider, Label, Collapsible) + Tailwind.
+## Yang TIDAK dikerjakan sekarang
 
-## Design Direction
-
-- **Vibe**: bersih, ramah, sedikit playful — bukan korporat. Warna aksen hijau WhatsApp-ish biar familiar untuk user desa.
-- **Typography**: font sans-serif tebal untuk heading (jelas dibaca), body normal.
-- **Tombol besar** (min 44px tinggi) untuk jempol.
-- Semua warna pakai design tokens di `src/styles.css` (oklch).
-
-## SEO
-
-- Title: "QR Code Generator Gratis — Buat QR untuk WA, Link & Toko"
-- Meta description Indonesia, H1 jelas, lang="id".
-
-## Yang TIDAK dibuat (sengaja)
-- Login / akun
-- History QR / simpan ke cloud
-- QR dinamis (butuh backend)
-- vCard, WiFi, Event, PDF, Video, Social, 2D Barcode
-- Frame template (rumit; cukup teks di bawah saja)
-
-## Langkah Implementasi
-1. Install `qr-code-styling`
-2. Setup design tokens (warna brand hijau + netral) di `styles.css`
-3. Bangun komponen QR & preview live
-4. Tambah input per tipe (URL/WA/Teks) dengan validasi ringan
-5. Customizer (warna preset, bentuk, logo upload, teks)
-6. Action buttons (download PNG, copy clipboard, web share)
-7. SEO meta + responsive polish
+Ide 4–10 (frame dekoratif, batch, scan, format SVG/PDF, kustomisasi lanjut, share URL, analytics) ditunda.
