@@ -137,10 +137,9 @@ function buildData(type: ContentType, f: FormState) {
     const ssid = f.wifiSsid.trim();
     if (!ssid) return "";
     const enc = f.wifiEnc;
-    const pass = enc === "nopass" ? "" : f.wifiPass;
-    return `WIFI:T:${enc};S:${escapeWifi(ssid)};P:${escapeWifi(pass)};${
-      f.wifiHidden ? "H:true;" : ""
-    };`;
+    const passPart = enc === "nopass" ? "" : `P:${escapeWifi(f.wifiPass)};`;
+    const hiddenPart = f.wifiHidden ? "H:true;" : "";
+    return `WIFI:T:${enc};S:${escapeWifi(ssid)};${passPart}${hiddenPart};`;
   }
   return f.text.trim();
 }
@@ -593,11 +592,14 @@ export function QrGenerator() {
                   <Label htmlFor="ssid">Nama WiFi (SSID)</Label>
                   <Input
                     id="ssid"
-                    placeholder="WiFi-Cafe"
+                    placeholder="Contoh: MyCafe_WiFi"
                     value={form.wifiSsid}
                     onChange={(e) => update("wifiSsid", e.target.value)}
                     className="h-12 text-base"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Contoh: MyCafe_WiFi
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="wpass">Password</Label>
@@ -608,6 +610,11 @@ export function QrGenerator() {
                     onChange={(e) => update("wifiPass", e.target.value)}
                     disabled={form.wifiEnc === "nopass"}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {form.wifiEnc === "nopass"
+                      ? "Dinonaktifkan karena mode Tanpa Password dipilih."
+                      : "Contoh: cafepass123"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label>Tipe Keamanan</Label>
@@ -637,6 +644,18 @@ export function QrGenerator() {
                   />
                   Jaringan tersembunyi (hidden SSID)
                 </label>
+                <div className="rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+                  <p className="mb-1 font-medium text-foreground">Format yang dihasilkan:</p>
+                  <code className="block break-all rounded bg-background px-2 py-1 text-[11px]">
+                    WIFI:T:{form.wifiEnc || "WPA"};S:{form.wifiSsid.trim() || "NamaWiFi"};
+                    {form.wifiEnc === "nopass" ? "" : `P:${form.wifiPass || "password"};`}
+                    {form.wifiHidden ? "H:true;" : ""};
+                  </code>
+                  <p className="mt-1.5">
+                    SSID = nama jaringan. T = tipe keamanan (WPA/WEP/nopass).
+                    P = password (hilangkan jika nopass). H:true = hidden.
+                  </p>
+                </div>
               </TabsContent>
             </Tabs>
           </section>
