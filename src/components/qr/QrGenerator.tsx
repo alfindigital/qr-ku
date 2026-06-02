@@ -340,13 +340,31 @@ export function QrGenerator() {
     reader.readAsDataURL(file);
   }
 
-  function applyTemplate(t: TemplateDef) {
-    setType(t.type);
-    setForm({ ...INITIAL_FORM, ...t.form } as FormState);
-    toast.success(`Template "${t.label}" dimuat`);
+  function loadFromHistory(item: QrHistoryItem) {
+    setType(item.type as ContentType);
+    setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
+    setColor(item.color);
+    setShape(item.shape as DotType);
+    setCaption(item.caption);
+    toast.success("Riwayat dimuat");
   }
 
-  function loadFromHistory(item: QrHistoryItem) {
+  function handleSave() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    history.save({
+      type,
+      label: TAB_LABELS[type],
+      data,
+      color,
+      shape: String(shape),
+      caption,
+      form: { ...form },
+    });
+    toast.success("Tersimpan di riwayat");
+  }
     setType(item.type as ContentType);
     setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
     setColor(item.color);
