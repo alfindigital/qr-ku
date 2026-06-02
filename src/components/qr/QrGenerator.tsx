@@ -14,6 +14,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Link as LinkIcon,
   MessageCircle,
   Type,
@@ -27,10 +32,9 @@ import {
   Phone,
   MapPin,
   Wifi,
-  Sparkles,
   History,
-  RotateCcw,
   Pencil,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
@@ -144,49 +148,6 @@ function buildData(type: ContentType, f: FormState) {
   }
   return f.text.trim();
 }
-
-type TemplateDef = {
-  id: string;
-  label: string;
-  type: ContentType;
-  form: Partial<FormState>;
-};
-
-const TEMPLATES: TemplateDef[] = [
-  {
-    id: "menu",
-    label: "Menu Restoran",
-    type: "url",
-    form: { url: "tokosaya.com/menu" },
-  },
-  {
-    id: "wa",
-    label: "Kontak WhatsApp",
-    type: "wa",
-    form: { waNumber: "08123456789", waMsg: "Halo, saya mau pesan..." },
-  },
-  {
-    id: "wifi",
-    label: "WiFi Cafe",
-    type: "wifi",
-    form: { wifiSsid: "WiFi-Cafe", wifiPass: "cafepass123", wifiEnc: "WPA" },
-  },
-  {
-    id: "toko",
-    label: "Info Toko",
-    type: "text",
-    form: { text: "Warung Bu Siti\nJl. Mawar No.5\nBuka 08.00 - 21.00" },
-  },
-  {
-    id: "email",
-    label: "Email Bisnis",
-    type: "email",
-    form: {
-      email: "info@tokosaya.com",
-      emailSubject: "Pertanyaan Produk",
-    },
-  },
-];
 
 const TAB_LABELS: Record<ContentType, string> = {
   url: "Link",
