@@ -368,6 +368,95 @@ export function QrGenerator() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
+      {/* Floating history popover - top right */}
+      <div className="fixed right-3 top-3 z-40 sm:right-5 sm:top-5">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-1.5 rounded-full bg-card/95 shadow-md backdrop-blur"
+              title="Riwayat QR"
+            >
+              <History className="h-4 w-4" />
+              <span className="text-xs font-medium">Riwayat</span>
+              {history.items.length > 0 && (
+                <span className="ml-0.5 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
+                  {history.items.length}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-[320px] p-3 sm:w-[360px]">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <History className="h-3.5 w-3.5" />
+                Riwayat QR
+              </h2>
+              {history.items.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Hapus semua riwayat?")) history.clear();
+                  }}
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Hapus semua
+                </button>
+              )}
+            </div>
+            {history.items.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                Belum ada riwayat. Klik tombol Simpan untuk menyimpan QR.
+              </p>
+            ) : (
+              <ul className="max-h-80 space-y-2 overflow-y-auto">
+                {history.items.map((it) => (
+                  <li
+                    key={it.id}
+                    className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2"
+                  >
+                    <div
+                      className="h-8 w-8 shrink-0 rounded"
+                      style={{ backgroundColor: it.color }}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-foreground">
+                        {it.label}
+                      </p>
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {it.data}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => loadFromHistory(it)}
+                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        title="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("Hapus riwayat ini?")) history.remove(it.id);
+                        }}
+                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-destructive"
+                        title="Hapus"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="order-1 space-y-4 sm:space-y-5 lg:order-1">
