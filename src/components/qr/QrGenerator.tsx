@@ -365,13 +365,6 @@ export function QrGenerator() {
     });
     toast.success("Tersimpan di riwayat");
   }
-    setType(item.type as ContentType);
-    setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
-    setColor(item.color);
-    setShape(item.shape as DotType);
-    setCaption(item.caption);
-    toast.success("Riwayat dimuat");
-  }
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
