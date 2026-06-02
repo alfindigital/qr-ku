@@ -14,6 +14,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Link as LinkIcon,
   MessageCircle,
   Type,
@@ -27,10 +32,9 @@ import {
   Phone,
   MapPin,
   Wifi,
-  Sparkles,
   History,
-  RotateCcw,
   Pencil,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
@@ -144,49 +148,6 @@ function buildData(type: ContentType, f: FormState) {
   }
   return f.text.trim();
 }
-
-type TemplateDef = {
-  id: string;
-  label: string;
-  type: ContentType;
-  form: Partial<FormState>;
-};
-
-const TEMPLATES: TemplateDef[] = [
-  {
-    id: "menu",
-    label: "Menu Restoran",
-    type: "url",
-    form: { url: "tokosaya.com/menu" },
-  },
-  {
-    id: "wa",
-    label: "Kontak WhatsApp",
-    type: "wa",
-    form: { waNumber: "08123456789", waMsg: "Halo, saya mau pesan..." },
-  },
-  {
-    id: "wifi",
-    label: "WiFi Cafe",
-    type: "wifi",
-    form: { wifiSsid: "WiFi-Cafe", wifiPass: "cafepass123", wifiEnc: "WPA" },
-  },
-  {
-    id: "toko",
-    label: "Info Toko",
-    type: "text",
-    form: { text: "Warung Bu Siti\nJl. Mawar No.5\nBuka 08.00 - 21.00" },
-  },
-  {
-    id: "email",
-    label: "Email Bisnis",
-    type: "email",
-    form: {
-      email: "info@tokosaya.com",
-      emailSubject: "Pertanyaan Produk",
-    },
-  },
-];
 
 const TAB_LABELS: Record<ContentType, string> = {
   url: "Link",
@@ -379,12 +340,6 @@ export function QrGenerator() {
     reader.readAsDataURL(file);
   }
 
-  function applyTemplate(t: TemplateDef) {
-    setType(t.type);
-    setForm({ ...INITIAL_FORM, ...t.form } as FormState);
-    toast.success(`Template "${t.label}" dimuat`);
-  }
-
   function loadFromHistory(item: QrHistoryItem) {
     setType(item.type as ContentType);
     setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
@@ -394,31 +349,117 @@ export function QrGenerator() {
     toast.success("Riwayat dimuat");
   }
 
+  function handleSave() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    history.save({
+      type,
+      label: TAB_LABELS[type],
+      data,
+      color,
+      shape: String(shape),
+      caption,
+      form: { ...form },
+    });
+    toast.success("Tersimpan di riwayat");
+  }
+
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
+      {/* Floating history popover - top right */}
+      <div className="fixed right-3 top-3 z-40 sm:right-5 sm:top-5">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-1.5 rounded-full bg-card/95 shadow-md backdrop-blur"
+              title="Riwayat QR"
+            >
+              <History className="h-4 w-4" />
+              <span className="text-xs font-medium">Riwayat</span>
+              {history.items.length > 0 && (
+                <span className="ml-0.5 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
+                  {history.items.length}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-[320px] p-3 sm:w-[360px]">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <History className="h-3.5 w-3.5" />
+                Riwayat QR
+              </h2>
+              {history.items.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Hapus semua riwayat?")) history.clear();
+                  }}
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Hapus semua
+                </button>
+              )}
+            </div>
+            {history.items.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                Belum ada riwayat. Klik tombol Simpan untuk menyimpan QR.
+              </p>
+            ) : (
+              <ul className="max-h-80 space-y-2 overflow-y-auto">
+                {history.items.map((it) => (
+                  <li
+                    key={it.id}
+                    className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2"
+                  >
+                    <div
+                      className="h-8 w-8 shrink-0 rounded"
+                      style={{ backgroundColor: it.color }}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-foreground">
+                        {it.label}
+                      </p>
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {it.data}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => loadFromHistory(it)}
+                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        title="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("Hapus riwayat ini?")) history.remove(it.id);
+                        }}
+                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-destructive"
+                        title="Hapus"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="order-1 space-y-4 sm:space-y-5 lg:order-1">
-          {/* Quick templates */}
-          <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
-            <h2 className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5" />
-              Template cepat
-            </h2>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {TEMPLATES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => applyTemplate(t)}
-                  className="shrink-0 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </section>
-
           <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
@@ -831,82 +872,17 @@ export function QrGenerator() {
               >
                 <Share2 className="h-5 w-5" />
               </Button>
+              <Button
+                onClick={handleSave}
+                disabled={!hasData}
+                variant="outline"
+                className="h-11 w-11 shrink-0 p-0"
+                title="Simpan ke riwayat"
+              >
+                <Save className="h-5 w-5" />
+              </Button>
             </div>
-
-            {!hasData && (
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                Isi dulu kontennya di atas
-              </p>
-            )}
           </div>
-
-          {history.items.length > 0 && (
-            <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <History className="h-3.5 w-3.5" />
-                  Riwayat QR
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("Hapus semua riwayat?")) {
-                      history.clear();
-                    }
-                  }}
-                  className="text-xs text-muted-foreground hover:text-destructive"
-                >
-                  Hapus semua
-                </button>
-              </div>
-              <ul className="space-y-2 max-h-72 overflow-y-auto">
-                {history.items.map((it) => (
-                  <li
-                    key={it.id}
-                    className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2"
-                  >
-                    <div
-                      className="h-8 w-8 shrink-0 rounded"
-                      style={{ backgroundColor: it.color }}
-                      aria-hidden
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-foreground">
-                        {it.label}
-                      </p>
-                      <p className="truncate text-[11px] text-muted-foreground">
-                        {it.data}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        type="button"
-                        onClick={() => loadFromHistory(it)}
-                        className="flex items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                        title="Edit"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Edit</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (confirm("Hapus riwayat ini?")) {
-                            history.remove(it.id);
-                          }
-                        }}
-                        className="flex items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-destructive"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Hapus</span>
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
           </div>
         </aside>
       </div>
