@@ -30,6 +30,7 @@ import {
   Sparkles,
   History,
   RotateCcw,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
