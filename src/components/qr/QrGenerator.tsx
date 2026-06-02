@@ -849,7 +849,11 @@ export function QrGenerator() {
                 </h2>
                 <button
                   type="button"
-                  onClick={history.clear}
+                  onClick={() => {
+                    if (confirm("Hapus semua riwayat?")) {
+                      history.clear();
+                    }
+                  }}
                   className="text-xs text-muted-foreground hover:text-destructive"
                 >
                   Hapus semua
