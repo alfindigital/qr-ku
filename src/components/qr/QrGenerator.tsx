@@ -371,26 +371,6 @@ export function QrGenerator() {
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
         <div className="order-1 space-y-4 sm:space-y-5 lg:order-1">
-          {/* Quick templates */}
-          <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
-            <h2 className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5" />
-              Template cepat
-            </h2>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {TEMPLATES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => applyTemplate(t)}
-                  className="shrink-0 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </section>
-
           <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               1. Pilih jenis isi
