@@ -30,6 +30,7 @@ import {
   Sparkles,
   History,
   RotateCcw,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
@@ -848,7 +849,11 @@ export function QrGenerator() {
                 </h2>
                 <button
                   type="button"
-                  onClick={history.clear}
+                  onClick={() => {
+                    if (confirm("Hapus semua riwayat?")) {
+                      history.clear();
+                    }
+                  }}
                   className="text-xs text-muted-foreground hover:text-destructive"
                 >
                   Hapus semua
@@ -873,22 +878,30 @@ export function QrGenerator() {
                         {it.data}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => loadFromHistory(it)}
-                      className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                      title="Muat ulang"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => history.remove(it.id)}
-                      className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-destructive"
-                      title="Hapus"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => loadFromHistory(it)}
+                        className="flex items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                        title="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("Hapus riwayat ini?")) {
+                            history.remove(it.id);
+                          }
+                        }}
+                        className="flex items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-destructive"
+                        title="Hapus"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Hapus</span>
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
