@@ -49,6 +49,68 @@ const COLOR_PRESETS = [
   "#ea580c",
 ];
 
+type Theme = {
+  id: string;
+  label: string;
+  hex: string;
+  primary: string;
+  primaryGlow: string;
+  primaryForeground: string;
+};
+
+const THEMES: Theme[] = [
+  {
+    id: "hijau",
+    label: "Hijau",
+    hex: "#16a34a",
+    primary: "oklch(0.62 0.17 152)",
+    primaryGlow: "oklch(0.72 0.18 152)",
+    primaryForeground: "oklch(0.99 0.005 150)",
+  },
+  {
+    id: "biru",
+    label: "Biru",
+    hex: "#2563eb",
+    primary: "oklch(0.55 0.2 260)",
+    primaryGlow: "oklch(0.68 0.18 260)",
+    primaryForeground: "oklch(0.99 0.005 260)",
+  },
+  {
+    id: "ungu",
+    label: "Ungu",
+    hex: "#9333ea",
+    primary: "oklch(0.55 0.24 300)",
+    primaryGlow: "oklch(0.68 0.2 300)",
+    primaryForeground: "oklch(0.99 0.005 300)",
+  },
+  {
+    id: "merah",
+    label: "Merah",
+    hex: "#dc2626",
+    primary: "oklch(0.58 0.22 25)",
+    primaryGlow: "oklch(0.7 0.2 25)",
+    primaryForeground: "oklch(0.99 0.005 25)",
+  },
+  {
+    id: "oranye",
+    label: "Oranye",
+    hex: "#ea580c",
+    primary: "oklch(0.65 0.2 50)",
+    primaryGlow: "oklch(0.76 0.18 50)",
+    primaryForeground: "oklch(0.99 0.01 60)",
+  },
+  {
+    id: "gelap",
+    label: "Gelap",
+    hex: "#111827",
+    primary: "oklch(0.28 0.04 265)",
+    primaryGlow: "oklch(0.42 0.05 265)",
+    primaryForeground: "oklch(0.99 0.005 260)",
+  },
+];
+
+const THEME_STORAGE_KEY = "qrku.theme";
+
 
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
@@ -165,11 +227,33 @@ export function QrGenerator() {
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const [color, setColor] = useState(COLOR_PRESETS[1]);
+  const [themeId, setThemeId] = useState<string>(() => {
+    if (typeof window === "undefined") return THEMES[0].id;
+    return localStorage.getItem(THEME_STORAGE_KEY) ?? THEMES[0].id;
+  });
+  const activeTheme = useMemo(
+    () => THEMES.find((t) => t.id === themeId) ?? THEMES[0],
+    [themeId],
+  );
+  const [color, setColor] = useState(activeTheme.hex);
   const [bgTransparent, setBgTransparent] = useState(false);
   const [shape, setShape] = useState<DotType>("rounded");
   const [logo, setLogo] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--primary", activeTheme.primary);
+    root.style.setProperty("--primary-glow", activeTheme.primaryGlow);
+    root.style.setProperty("--primary-foreground", activeTheme.primaryForeground);
+    localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
+  }, [activeTheme]);
+
+  function applyTheme(id: string) {
+    const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
+    setThemeId(next.id);
+    setColor(next.hex);
+  }
 
   const data = useMemo(() => buildData(type, form), [type, form]);
 
@@ -732,6 +816,38 @@ export function QrGenerator() {
             </h2>
 
             <div className="space-y-5">
+              <div>
+                <Label className="mb-2 block">Tema warna</Label>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  {THEMES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => applyTheme(t.id)}
+                      className={`h-9 rounded-full border-2 px-3 text-xs font-medium transition-transform ${
+                        themeId === t.id
+                          ? "scale-105 border-foreground text-foreground"
+                          : "border-transparent text-muted-foreground"
+                      }`}
+                      style={{
+                        backgroundColor:
+                          themeId === t.id ? `${t.hex}20` : "transparent",
+                      }}
+                      title={t.label}
+                    >
+                      <span
+                        className="mr-1.5 inline-block h-3 w-3 rounded-full align-middle"
+                        style={{ backgroundColor: t.hex }}
+                      />
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  Tema mengubah warna tombol, riwayat, dan QR sekaligus.
+                </p>
+              </div>
+
               <div>
                 <Label className="mb-2 block">Warna QR</Label>
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
