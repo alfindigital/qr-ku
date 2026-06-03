@@ -817,6 +817,38 @@ export function QrGenerator() {
 
             <div className="space-y-5">
               <div>
+                <Label className="mb-2 block">Tema warna</Label>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  {THEMES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => applyTheme(t.id)}
+                      className={`h-9 rounded-full border-2 px-3 text-xs font-medium transition-transform ${
+                        themeId === t.id
+                          ? "scale-105 border-foreground text-foreground"
+                          : "border-transparent text-muted-foreground"
+                      }`}
+                      style={{
+                        backgroundColor:
+                          themeId === t.id ? `${t.hex}20` : "transparent",
+                      }}
+                      title={t.label}
+                    >
+                      <span
+                        className="mr-1.5 inline-block h-3 w-3 rounded-full align-middle"
+                        style={{ backgroundColor: t.hex }}
+                      />
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  Tema mengubah warna tombol, riwayat, dan QR sekaligus.
+                </p>
+              </div>
+
+              <div>
                 <Label className="mb-2 block">Warna QR</Label>
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {COLOR_PRESETS.map((c) => (
