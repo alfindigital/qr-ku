@@ -21,7 +21,8 @@ function read(): QrHistoryItem[] {
     const raw = localStorage.getItem(KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    const arr = Array.isArray(parsed) ? parsed : [];
+    return arr.sort((a: QrHistoryItem, b: QrHistoryItem) => b.createdAt - a.createdAt);
   } catch {
     return [];
   }
