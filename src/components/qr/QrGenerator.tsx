@@ -339,6 +339,26 @@ export function QrGenerator() {
     localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
   }, [activeTheme]);
 
+  // Auto-save draft to localStorage whenever content changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const draft: DraftState = {
+      type,
+      form,
+      themeId,
+      color,
+      bgTransparent,
+      shape,
+      logo,
+      caption,
+    };
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // ignore quota errors (e.g. oversized logo)
+    }
+  }, [type, form, themeId, color, bgTransparent, shape, logo, caption]);
+
   function applyTheme(id: string) {
     const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
     setThemeId(next.id);
