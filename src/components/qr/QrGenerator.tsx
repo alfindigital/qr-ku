@@ -110,6 +110,18 @@ const THEMES: Theme[] = [
 ];
 
 const THEME_STORAGE_KEY = "qrku.theme";
+const DRAFT_KEY = "qrku:draft";
+
+type DraftState = {
+  type: ContentType;
+  form: FormState;
+  themeId: string;
+  color: string;
+  bgTransparent: boolean;
+  shape: DotType;
+  logo: string | null;
+  caption: string;
+};
 
 
 const SHAPES: { id: DotType; label: string }[] = [
@@ -222,24 +234,102 @@ const TAB_LABELS: Record<ContentType, string> = {
 };
 
 export function QrGenerator() {
-  const [type, setType] = useState<ContentType>("url");
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [type, setType] = useState<ContentType>(() => {
+    if (typeof window === "undefined") return "url";
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (parsed.type && TAB_LABELS[parsed.type as ContentType]) return parsed.type as ContentType;
+      }
+    } catch { /* ignore */ }
+    return "url";
+  });
+  const [form, setForm] = useState<FormState>(() => {
+    if (typeof window === "undefined") return INITIAL_FORM;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (parsed.form) return { ...INITIAL_FORM, ...parsed.form } as FormState;
+      }
+    } catch { /* ignore */ }
+    return INITIAL_FORM;
+  });
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   const [themeId, setThemeId] = useState<string>(() => {
     if (typeof window === "undefined") return THEMES[0].id;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        const valid = THEMES.find((t) => t.id === parsed.themeId);
+        if (valid) return valid.id;
+      }
+    } catch { /* ignore */ }
     return localStorage.getItem(THEME_STORAGE_KEY) ?? THEMES[0].id;
   });
   const activeTheme = useMemo(
     () => THEMES.find((t) => t.id === themeId) ?? THEMES[0],
     [themeId],
   );
-  const [color, setColor] = useState(activeTheme.hex);
-  const [bgTransparent, setBgTransparent] = useState(false);
-  const [shape, setShape] = useState<DotType>("rounded");
-  const [logo, setLogo] = useState<string | null>(null);
-  const [caption, setCaption] = useState("");
+  const [color, setColor] = useState<string>(() => {
+    if (typeof window === "undefined") return activeTheme.hex;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (parsed.color) return parsed.color;
+      }
+    } catch { /* ignore */ }
+    return activeTheme.hex;
+  });
+  const [bgTransparent, setBgTransparent] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (typeof parsed.bgTransparent === "boolean") return parsed.bgTransparent;
+      }
+    } catch { /* ignore */ }
+    return false;
+  });
+  const [shape, setShape] = useState<DotType>(() => {
+    if (typeof window === "undefined") return "rounded";
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (parsed.shape && ["square", "rounded", "dots"].includes(parsed.shape)) return parsed.shape as DotType;
+      }
+    } catch { /* ignore */ }
+    return "rounded";
+  });
+  const [logo, setLogo] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (parsed.logo) return parsed.logo;
+      }
+    } catch { /* ignore */ }
+    return null;
+  });
+  const [caption, setCaption] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<DraftState>;
+        if (typeof parsed.caption === "string") return parsed.caption;
+      }
+    } catch { /* ignore */ }
+    return "";
+  });
 
   useEffect(() => {
     const root = document.documentElement;
@@ -248,6 +338,26 @@ export function QrGenerator() {
     root.style.setProperty("--primary-foreground", activeTheme.primaryForeground);
     localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
   }, [activeTheme]);
+
+  // Auto-save draft to localStorage whenever content changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const draft: DraftState = {
+      type,
+      form,
+      themeId,
+      color,
+      bgTransparent,
+      shape,
+      logo,
+      caption,
+    };
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // ignore quota errors (e.g. oversized logo)
+    }
+  }, [type, form, themeId, color, bgTransparent, shape, logo, caption]);
 
   function applyTheme(id: string) {
     const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
