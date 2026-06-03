@@ -110,6 +110,18 @@ const THEMES: Theme[] = [
 ];
 
 const THEME_STORAGE_KEY = "qrku.theme";
+const DRAFT_KEY = "qrku:draft";
+
+type DraftState = {
+  type: ContentType;
+  form: FormState;
+  themeId: string;
+  color: string;
+  bgTransparent: boolean;
+  shape: DotType;
+  logo: string | null;
+  caption: string;
+};
 
 
 const SHAPES: { id: DotType; label: string }[] = [
