@@ -432,6 +432,21 @@ export function QrGenerator() {
                     <div className="flex items-center gap-0.5">
                       <button
                         type="button"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(it.data);
+                            toast.success("Teks disalin");
+                          } catch {
+                            toast.error("Gagal menyalin");
+                          }
+                        }}
+                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        title="Salin teks"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => loadFromHistory(it)}
                         className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
                         title="Edit"
