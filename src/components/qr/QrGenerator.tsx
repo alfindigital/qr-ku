@@ -428,6 +428,15 @@ export function QrGenerator() {
                       <p className="truncate text-[11px] text-muted-foreground">
                         {it.data}
                       </p>
+                      <p className="text-[10px] text-muted-foreground/70">
+                        {new Date(it.createdAt).toLocaleString("id-ID", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </div>
                     <div className="flex items-center gap-0.5">
                       <button
