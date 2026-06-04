@@ -1140,3 +1140,12 @@ export function QrGenerator() {
     </div>
   );
 }
+
+function HeaderSlot({ children }: { children: React.ReactNode }) {
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setTarget(document.getElementById("header-actions-slot"));
+  }, []);
+  if (!target) return null;
+  return createPortal(children, target);
+}
