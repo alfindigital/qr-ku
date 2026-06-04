@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import QRCodeStyling, {
   type DotType,
   type Options as QrOptions,
