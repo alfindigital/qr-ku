@@ -600,12 +600,41 @@ export function QrGenerator() {
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-[320px] p-3 sm:w-[360px]">
-            <div className="mb-2 flex items-center justify-between">
+          <PopoverContent
+            align={popoverPos}
+            sideOffset={8}
+            collisionPadding={8}
+            className="w-[min(92vw,360px)] p-3"
+          >
+            <div className="mb-2 flex items-center justify-between gap-2">
               <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <History className="h-3.5 w-3.5" />
                 Riwayat QR
               </h2>
+              <div
+                role="group"
+                aria-label="Posisi popover"
+                className="flex items-center gap-0.5 rounded-full border border-border bg-muted/50 p-0.5"
+              >
+                {POPOVER_POS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    title={opt.title}
+                    onClick={() => setPopoverPos(opt.id)}
+                    aria-pressed={popoverPos === opt.id}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                      popoverPos === opt.id
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-2 flex items-center justify-end">
               {history.items.length > 0 && (
                 <button
                   type="button"
