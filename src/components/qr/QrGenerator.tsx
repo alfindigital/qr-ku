@@ -563,14 +563,14 @@ export function QrGenerator() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
-      {/* Floating history popover - top right */}
-      <div className="fixed right-3 top-3 z-40 sm:right-5 sm:top-5">
+      {/* History popover - rendered into header slot to align with theme toggle */}
+      <HeaderSlot>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               size="sm"
-              className="h-10 gap-1.5 rounded-full bg-card/95 shadow-md backdrop-blur"
+              className="h-9 gap-1.5 rounded-full"
               title="Riwayat QR"
             >
               <History className="h-4 w-4" />
@@ -674,7 +674,7 @@ export function QrGenerator() {
             )}
           </PopoverContent>
         </Popover>
-      </div>
+      </HeaderSlot>
 
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
         {/* LEFT: Input + Customize */}
