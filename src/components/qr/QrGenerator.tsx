@@ -112,6 +112,14 @@ const THEMES: Theme[] = [
 
 const THEME_STORAGE_KEY = "qrku.theme";
 const DRAFT_KEY = "qrku:draft";
+const POPOVER_POS_KEY = "qrku:historyPopoverPos";
+
+type PopoverPos = "end" | "center" | "start";
+const POPOVER_POS_OPTIONS: { id: PopoverPos; label: string; title: string }[] = [
+  { id: "end", label: "Kanan", title: "Sejajar kanan tombol" },
+  { id: "center", label: "Tengah", title: "Di tengah tombol" },
+  { id: "start", label: "Kiri", title: "Sejajar kiri tombol" },
+];
 
 type DraftState = {
   type: ContentType;
