@@ -383,6 +383,17 @@ export function QrGenerator() {
   const qrRef = useRef<QRCodeStyling | null>(null);
   const [qrSize, setQrSize] = useState(280);
 
+  const [popoverPos, setPopoverPos] = useState<PopoverPos>(() => {
+    if (typeof window === "undefined") return "end";
+    const v = localStorage.getItem(POPOVER_POS_KEY);
+    return v === "center" || v === "start" || v === "end" ? v : "end";
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(POPOVER_POS_KEY, popoverPos);
+    } catch {}
+  }, [popoverPos]);
+
   useEffect(() => {
     if (!wrapRef.current) return;
     const ro = new ResizeObserver((entries) => {
