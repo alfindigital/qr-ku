@@ -976,29 +976,21 @@ export function QrGenerator() {
             <div className="space-y-5">
               <div>
                 <Label className="mb-2 block">Tema warna</Label>
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => applyTheme(t.id)}
-                      className={`h-9 rounded-full border-2 px-3 text-xs font-medium transition-transform ${
+                      className={`h-9 flex-1 min-w-[44px] rounded-full border-2 transition-transform ${
                         themeId === t.id
-                          ? "scale-105 border-foreground text-foreground"
-                          : "border-transparent text-muted-foreground"
+                          ? "scale-105 border-foreground"
+                          : "border-transparent"
                       }`}
-                      style={{
-                        backgroundColor:
-                          themeId === t.id ? `${t.hex}20` : "transparent",
-                      }}
+                      style={{ backgroundColor: t.hex }}
                       title={t.label}
-                    >
-                      <span
-                        className="mr-1.5 inline-block h-3 w-3 rounded-full align-middle"
-                        style={{ backgroundColor: t.hex }}
-                      />
-                      {t.label}
-                    </button>
+                      aria-label={t.label}
+                    />
                   ))}
                 </div>
                 <p className="mt-1.5 text-[11px] text-muted-foreground">
