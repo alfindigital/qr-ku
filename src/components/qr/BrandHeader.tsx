@@ -8,7 +8,8 @@ export function BrandHeader() {
         <span className="font-display text-xl font-bold tracking-tight text-foreground">
           QRku
         </span>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <div id="header-actions-slot" className="flex items-center gap-2" />
           <ThemeToggle />
         </div>
       </div>
