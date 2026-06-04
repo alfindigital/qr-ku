@@ -570,13 +570,12 @@ export function QrGenerator() {
             <Button
               variant="outline"
               size="sm"
-              className="h-9 gap-1.5 rounded-full"
+              className="h-9 rounded-full"
               title="Riwayat QR"
             >
               <History className="h-4 w-4" />
-              <span className="text-xs font-medium">Riwayat</span>
               {history.items.length > 0 && (
-                <span className="ml-0.5 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
+                <span className="ml-1 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
                   {history.items.length}
                 </span>
               )}
