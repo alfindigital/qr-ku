@@ -992,30 +992,10 @@ export function QrGenerator() {
                       aria-label={t.label}
                     />
                   ))}
-                </div>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  Tema mengubah warna tombol, riwayat, dan QR sekaligus.
-                </p>
-              </div>
-
-              <div>
-                <Label className="mb-2 block">Warna QR</Label>
-                <div className="flex flex-wrap items-center gap-2">
-                  {COLOR_PRESETS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className={`h-9 flex-1 min-w-[44px] rounded-full border-2 transition-transform ${
-                        color === c
-                          ? "scale-105 border-foreground"
-                          : "border-transparent"
-                      }`}
-                      style={{ backgroundColor: c }}
-                      aria-label={`Warna ${c}`}
-                    />
-                  ))}
-                  <label className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
+                  <label
+                    className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                    title="Warna kustom"
+                  >
                     <input
                       type="color"
                       value={color}
@@ -1027,6 +1007,9 @@ export function QrGenerator() {
                     </span>
                   </label>
                 </div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  Tema mengubah warna tombol, riwayat, dan QR sekaligus. Tekan + untuk warna kustom.
+                </p>
               </div>
 
               <div>
