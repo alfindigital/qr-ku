@@ -1110,41 +1110,51 @@ export function QrGenerator() {
               )}
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
+            {!hasData && (
+              <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
+                Isi kontennya dulu di sebelah kiri, QR muncul otomatis di sini.
+              </p>
+            )}
+
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Button
                 onClick={handleDownload}
                 disabled={!hasData}
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Download PNG"
               >
                 <Download className="h-5 w-5" />
+                Unduh
               </Button>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Salin gambar"
               >
                 <Copy className="h-5 w-5" />
+                Salin
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Bagikan"
               >
                 <Share2 className="h-5 w-5" />
+                Bagikan
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Simpan ke riwayat"
               >
                 <Save className="h-5 w-5" />
+                Simpan
               </Button>
             </div>
           </div>
