@@ -42,14 +42,6 @@ import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
 
 type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi";
 
-const COLOR_PRESETS = [
-  "#111827",
-  "#16a34a",
-  "#2563eb",
-  "#dc2626",
-  "#ea580c",
-];
-
 type Theme = {
   id: string;
   label: string;
