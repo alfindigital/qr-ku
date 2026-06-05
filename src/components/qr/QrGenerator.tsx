@@ -42,14 +42,6 @@ import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
 
 type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi";
 
-const COLOR_PRESETS = [
-  "#111827",
-  "#16a34a",
-  "#2563eb",
-  "#dc2626",
-  "#ea580c",
-];
-
 type Theme = {
   id: string;
   label: string;
@@ -992,30 +984,10 @@ export function QrGenerator() {
                       aria-label={t.label}
                     />
                   ))}
-                </div>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  Tema mengubah warna tombol, riwayat, dan QR sekaligus.
-                </p>
-              </div>
-
-              <div>
-                <Label className="mb-2 block">Warna QR</Label>
-                <div className="flex flex-wrap items-center gap-2">
-                  {COLOR_PRESETS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className={`h-9 flex-1 min-w-[44px] rounded-full border-2 transition-transform ${
-                        color === c
-                          ? "scale-105 border-foreground"
-                          : "border-transparent"
-                      }`}
-                      style={{ backgroundColor: c }}
-                      aria-label={`Warna ${c}`}
-                    />
-                  ))}
-                  <label className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
+                  <label
+                    className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                    title="Warna kustom"
+                  >
                     <input
                       type="color"
                       value={color}
@@ -1027,6 +999,9 @@ export function QrGenerator() {
                     </span>
                   </label>
                 </div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  Tema mengubah warna tombol, riwayat, dan QR sekaligus. Tekan + untuk warna kustom.
+                </p>
               </div>
 
               <div>
@@ -1135,41 +1110,51 @@ export function QrGenerator() {
               )}
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
+            {!hasData && (
+              <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
+                Isi kontennya dulu di sebelah kiri, QR muncul otomatis di sini.
+              </p>
+            )}
+
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Button
                 onClick={handleDownload}
                 disabled={!hasData}
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Download PNG"
               >
                 <Download className="h-5 w-5" />
+                Unduh
               </Button>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Salin gambar"
               >
                 <Copy className="h-5 w-5" />
+                Salin
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Bagikan"
               >
                 <Share2 className="h-5 w-5" />
+                Bagikan
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!hasData}
                 variant="outline"
-                className="h-11 w-11 shrink-0 p-0"
+                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
                 title="Simpan ke riwayat"
               >
                 <Save className="h-5 w-5" />
+                Simpan
               </Button>
             </div>
           </div>
