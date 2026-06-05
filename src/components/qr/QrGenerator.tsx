@@ -1077,40 +1077,40 @@ export function QrGenerator() {
               <Button
                 onClick={handleDownload}
                 disabled={!hasData}
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Download PNG"
               >
-                <Download className="h-5 w-5" />
+                <Download className="h-5 w-5 shrink-0" />
                 Unduh
               </Button>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Salin gambar"
               >
-                <Copy className="h-5 w-5" />
+                <Copy className="h-5 w-5 shrink-0" />
                 Salin
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Bagikan"
               >
-                <Share2 className="h-5 w-5" />
+                <Share2 className="h-5 w-5 shrink-0" />
                 Bagikan
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Simpan ke riwayat"
               >
-                <Save className="h-5 w-5" />
+                <Save className="h-5 w-5 shrink-0" />
                 Simpan
               </Button>
             </div>
