@@ -235,102 +235,58 @@ const TAB_LABELS: Record<ContentType, string> = {
 };
 
 export function QrGenerator() {
-  const [type, setType] = useState<ContentType>(() => {
-    if (typeof window === "undefined") return "url";
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (parsed.type && TAB_LABELS[parsed.type as ContentType]) return parsed.type as ContentType;
-      }
-    } catch { /* ignore */ }
-    return "url";
-  });
-  const [form, setForm] = useState<FormState>(() => {
-    if (typeof window === "undefined") return INITIAL_FORM;
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (parsed.form) return { ...INITIAL_FORM, ...parsed.form } as FormState;
-      }
-    } catch { /* ignore */ }
-    return INITIAL_FORM;
-  });
+  // IMPORTANT: initial state must match SSR — defer localStorage reads to mount effect.
+  const [hydrated, setHydrated] = useState(false);
+  const [type, setType] = useState<ContentType>("url");
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const [themeId, setThemeId] = useState<string>(() => {
-    if (typeof window === "undefined") return THEMES[0].id;
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        const valid = THEMES.find((t) => t.id === parsed.themeId);
-        if (valid) return valid.id;
-      }
-    } catch { /* ignore */ }
-    return localStorage.getItem(THEME_STORAGE_KEY) ?? THEMES[0].id;
-  });
+  const [themeId, setThemeId] = useState<string>(THEMES[0].id);
   const activeTheme = useMemo(
     () => THEMES.find((t) => t.id === themeId) ?? THEMES[0],
     [themeId],
   );
-  const [color, setColor] = useState<string>(() => {
-    if (typeof window === "undefined") return activeTheme.hex;
+  const [color, setColor] = useState<string>(THEMES[0].hex);
+  const [bgTransparent, setBgTransparent] = useState<boolean>(false);
+  const [shape, setShape] = useState<DotType>("rounded");
+  const [logo, setLogo] = useState<string | null>(null);
+  const [caption, setCaption] = useState<string>("");
+
+  // Load persisted draft once on mount to avoid SSR/CSR hydration mismatch.
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (parsed.color) return parsed.color;
+        if (parsed.type && TAB_LABELS[parsed.type as ContentType]) setType(parsed.type as ContentType);
+        if (parsed.form) setForm((f) => ({ ...f, ...parsed.form }));
+        const validTheme = THEMES.find((t) => t.id === parsed.themeId);
+        if (validTheme) setThemeId(validTheme.id);
+        else {
+          const legacy = localStorage.getItem(THEME_STORAGE_KEY);
+          const legacyTheme = THEMES.find((t) => t.id === legacy);
+          if (legacyTheme) setThemeId(legacyTheme.id);
+        }
+        if (parsed.color) setColor(parsed.color);
+        else if (validTheme) setColor(validTheme.hex);
+        if (typeof parsed.bgTransparent === "boolean") setBgTransparent(parsed.bgTransparent);
+        if (parsed.shape && ["square", "rounded", "dots"].includes(parsed.shape)) {
+          setShape(parsed.shape as DotType);
+        }
+        if (parsed.logo) setLogo(parsed.logo);
+        if (typeof parsed.caption === "string") setCaption(parsed.caption);
+      } else {
+        const legacy = localStorage.getItem(THEME_STORAGE_KEY);
+        const legacyTheme = THEMES.find((t) => t.id === legacy);
+        if (legacyTheme) {
+          setThemeId(legacyTheme.id);
+          setColor(legacyTheme.hex);
+        }
       }
     } catch { /* ignore */ }
-    return activeTheme.hex;
-  });
-  const [bgTransparent, setBgTransparent] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (typeof parsed.bgTransparent === "boolean") return parsed.bgTransparent;
-      }
-    } catch { /* ignore */ }
-    return false;
-  });
-  const [shape, setShape] = useState<DotType>(() => {
-    if (typeof window === "undefined") return "rounded";
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (parsed.shape && ["square", "rounded", "dots"].includes(parsed.shape)) return parsed.shape as DotType;
-      }
-    } catch { /* ignore */ }
-    return "rounded";
-  });
-  const [logo, setLogo] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (parsed.logo) return parsed.logo;
-      }
-    } catch { /* ignore */ }
-    return null;
-  });
-  const [caption, setCaption] = useState<string>(() => {
-    if (typeof window === "undefined") return "";
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<DraftState>;
-        if (typeof parsed.caption === "string") return parsed.caption;
-      }
-    } catch { /* ignore */ }
-    return "";
-  });
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -342,7 +298,7 @@ export function QrGenerator() {
 
   // Auto-save draft to localStorage whenever content changes
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !hydrated) return;
     const draft: DraftState = {
       type,
       form,
@@ -358,7 +314,7 @@ export function QrGenerator() {
     } catch {
       // ignore quota errors (e.g. oversized logo)
     }
-  }, [type, form, themeId, color, bgTransparent, shape, logo, caption]);
+  }, [hydrated, type, form, themeId, color, bgTransparent, shape, logo, caption]);
 
   function applyTheme(id: string) {
     const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
@@ -375,16 +331,17 @@ export function QrGenerator() {
   const qrRef = useRef<QRCodeStyling | null>(null);
   const [qrSize, setQrSize] = useState(280);
 
-  const [popoverPos, setPopoverPos] = useState<PopoverPos>(() => {
-    if (typeof window === "undefined") return "end";
-    const v = localStorage.getItem(POPOVER_POS_KEY);
-    return v === "center" || v === "start" || v === "end" ? v : "end";
-  });
+  const [popoverPos, setPopoverPos] = useState<PopoverPos>("end");
   useEffect(() => {
+    const v = typeof window !== "undefined" ? localStorage.getItem(POPOVER_POS_KEY) : null;
+    if (v === "center" || v === "start" || v === "end") setPopoverPos(v);
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem(POPOVER_POS_KEY, popoverPos);
     } catch {}
-  }, [popoverPos]);
+  }, [hydrated, popoverPos]);
 
   useEffect(() => {
     if (!wrapRef.current) return;
@@ -1120,40 +1077,40 @@ export function QrGenerator() {
               <Button
                 onClick={handleDownload}
                 disabled={!hasData}
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Download PNG"
               >
-                <Download className="h-5 w-5" />
+                <Download className="h-5 w-5 shrink-0" />
                 Unduh
               </Button>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Salin gambar"
               >
-                <Copy className="h-5 w-5" />
+                <Copy className="h-5 w-5 shrink-0" />
                 Salin
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Bagikan"
               >
-                <Share2 className="h-5 w-5" />
+                <Share2 className="h-5 w-5 shrink-0" />
                 Bagikan
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!hasData}
                 variant="outline"
-                className="h-auto flex-col gap-1 py-2.5 text-xs font-medium"
+                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
                 title="Simpan ke riwayat"
               >
-                <Save className="h-5 w-5" />
+                <Save className="h-5 w-5 shrink-0" />
                 Simpan
               </Button>
             </div>
