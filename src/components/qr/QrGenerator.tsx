@@ -331,16 +331,17 @@ export function QrGenerator() {
   const qrRef = useRef<QRCodeStyling | null>(null);
   const [qrSize, setQrSize] = useState(280);
 
-  const [popoverPos, setPopoverPos] = useState<PopoverPos>(() => {
-    if (typeof window === "undefined") return "end";
-    const v = localStorage.getItem(POPOVER_POS_KEY);
-    return v === "center" || v === "start" || v === "end" ? v : "end";
-  });
+  const [popoverPos, setPopoverPos] = useState<PopoverPos>("end");
   useEffect(() => {
+    const v = typeof window !== "undefined" ? localStorage.getItem(POPOVER_POS_KEY) : null;
+    if (v === "center" || v === "start" || v === "end") setPopoverPos(v);
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem(POPOVER_POS_KEY, popoverPos);
     } catch {}
-  }, [popoverPos]);
+  }, [hydrated, popoverPos]);
 
   useEffect(() => {
     if (!wrapRef.current) return;
