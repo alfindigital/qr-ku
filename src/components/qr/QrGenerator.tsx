@@ -1000,29 +1000,29 @@ export function QrGenerator() {
 
               <div>
                 <Label className="mb-2 block">Warna QR</Label>
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {COLOR_PRESETS.map((c) => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => setColor(c)}
-                      className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full border-2 transition-transform ${
+                      className={`h-9 flex-1 min-w-[44px] rounded-full border-2 transition-transform ${
                         color === c
-                          ? "scale-110 border-foreground"
+                          ? "scale-105 border-foreground"
                           : "border-transparent"
                       }`}
                       style={{ backgroundColor: c }}
                       aria-label={`Warna ${c}`}
                     />
                   ))}
-                  <label className="relative h-8 w-8 sm:h-9 sm:w-9 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
+                  <label className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border">
                     <input
                       type="color"
                       value={color}
                       onChange={(e) => setColor(e.target.value)}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     />
-                    <span className="flex h-full w-full items-center justify-center text-[10px] sm:text-xs text-muted-foreground">
+                    <span className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
                       +
                     </span>
                   </label>
