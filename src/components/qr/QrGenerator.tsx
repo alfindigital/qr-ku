@@ -36,6 +36,7 @@ import {
   History,
   Pencil,
   Save,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
@@ -951,14 +952,11 @@ export function QrGenerator() {
                       onChange={(e) => setColor(e.target.value)}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     />
-                    <span className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                      +
+                    <span className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <Plus className="h-4 w-4" />
                     </span>
                   </label>
                 </div>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  Tema mengubah warna tombol, riwayat, dan QR sekaligus. Tekan + untuk warna kustom.
-                </p>
               </div>
 
               <div>

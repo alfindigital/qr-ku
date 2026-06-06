@@ -18,6 +18,10 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Buat QR Code dari link, WhatsApp, atau tulisan. Mudah dan cepat.",
       },
+      { property: "og:url", content: "https://qrku.lovable.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://qrku.lovable.app/" },
     ],
   }),
 });
