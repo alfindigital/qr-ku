@@ -837,7 +837,7 @@ export function QrGenerator() {
               1. Pilih jenis isi
             </h2>
             <Tabs value={type} onValueChange={(v) => setType(v as ContentType)}>
-              <TabsList className="grid h-auto w-full grid-cols-4 gap-1 bg-muted p-1 sm:grid-cols-7">
+              <TabsList className="grid h-auto w-full grid-cols-4 gap-1 bg-muted p-1 sm:grid-cols-8">
                 <TabsTrigger value="url" className="flex h-11 flex-col gap-0.5 text-xs">
                   <LinkIcon className="h-4 w-4" />
                   Link
@@ -845,6 +845,10 @@ export function QrGenerator() {
                 <TabsTrigger value="wa" className="flex h-11 flex-col gap-0.5 text-xs">
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
+                </TabsTrigger>
+                <TabsTrigger value="vcard" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <UserIcon className="h-4 w-4" />
+                  Kartu Nama
                 </TabsTrigger>
                 <TabsTrigger value="text" className="flex h-11 flex-col gap-0.5 text-xs">
                   <Type className="h-4 w-4" />
