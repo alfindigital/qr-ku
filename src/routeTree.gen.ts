@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SeoChecklistRouteImport } from './routes/seo-checklist'
 import { Route as QrWifiRouteImport } from './routes/qr-wifi'
+import { Route as QrWhatsappRouteImport } from './routes/qr-whatsapp'
+import { Route as QrVcardRouteImport } from './routes/qr-vcard'
+import { Route as QrMenuRestoranRouteImport } from './routes/qr-menu-restoran'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -29,6 +32,21 @@ const QrWifiRoute = QrWifiRouteImport.update({
   path: '/qr-wifi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QrWhatsappRoute = QrWhatsappRouteImport.update({
+  id: '/qr-whatsapp',
+  path: '/qr-whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QrVcardRoute = QrVcardRouteImport.update({
+  id: '/qr-vcard',
+  path: '/qr-vcard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QrMenuRestoranRoute = QrMenuRestoranRouteImport.update({
+  id: '/qr-menu-restoran',
+  path: '/qr-menu-restoran',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +55,18 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/qr-menu-restoran': typeof QrMenuRestoranRoute
+  '/qr-vcard': typeof QrVcardRoute
+  '/qr-whatsapp': typeof QrWhatsappRoute
   '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/qr-menu-restoran': typeof QrMenuRestoranRoute
+  '/qr-vcard': typeof QrVcardRoute
+  '/qr-whatsapp': typeof QrWhatsappRoute
   '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -50,20 +74,48 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/qr-menu-restoran': typeof QrMenuRestoranRoute
+  '/qr-vcard': typeof QrVcardRoute
+  '/qr-whatsapp': typeof QrWhatsappRoute
   '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/qr-menu-restoran'
+    | '/qr-vcard'
+    | '/qr-whatsapp'
+    | '/qr-wifi'
+    | '/seo-checklist'
+    | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
-  id: '__root__' | '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/qr-menu-restoran'
+    | '/qr-vcard'
+    | '/qr-whatsapp'
+    | '/qr-wifi'
+    | '/seo-checklist'
+    | '/sitemap.xml'
+  id:
+    | '__root__'
+    | '/'
+    | '/qr-menu-restoran'
+    | '/qr-vcard'
+    | '/qr-whatsapp'
+    | '/qr-wifi'
+    | '/seo-checklist'
+    | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  QrMenuRestoranRoute: typeof QrMenuRestoranRoute
+  QrVcardRoute: typeof QrVcardRoute
+  QrWhatsappRoute: typeof QrWhatsappRoute
   QrWifiRoute: typeof QrWifiRoute
   SeoChecklistRoute: typeof SeoChecklistRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -92,6 +144,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QrWifiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/qr-whatsapp': {
+      id: '/qr-whatsapp'
+      path: '/qr-whatsapp'
+      fullPath: '/qr-whatsapp'
+      preLoaderRoute: typeof QrWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/qr-vcard': {
+      id: '/qr-vcard'
+      path: '/qr-vcard'
+      fullPath: '/qr-vcard'
+      preLoaderRoute: typeof QrVcardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/qr-menu-restoran': {
+      id: '/qr-menu-restoran'
+      path: '/qr-menu-restoran'
+      fullPath: '/qr-menu-restoran'
+      preLoaderRoute: typeof QrMenuRestoranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  QrMenuRestoranRoute: QrMenuRestoranRoute,
+  QrVcardRoute: QrVcardRoute,
+  QrWhatsappRoute: QrWhatsappRoute,
   QrWifiRoute: QrWifiRoute,
   SeoChecklistRoute: SeoChecklistRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
