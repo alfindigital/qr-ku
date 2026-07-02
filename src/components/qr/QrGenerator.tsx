@@ -144,6 +144,9 @@ type DraftState = {
   shape: DotType;
   logo: string | null;
   caption: string;
+  bgColor?: string;
+  ecLevel?: EcLevel;
+  printSize?: string;
 };
 
 
