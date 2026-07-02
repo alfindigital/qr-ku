@@ -1075,6 +1075,86 @@ export function QrGenerator() {
                   </p>
                 </div>
               </TabsContent>
+
+              <TabsContent value="vcard" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="vcname">Nama Lengkap *</Label>
+                  <Input
+                    id="vcname"
+                    placeholder="Contoh: Alfin Digital"
+                    value={form.vcName}
+                    onChange={(e) => update("vcName", e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="vcphone">Nomor HP</Label>
+                    <Input
+                      id="vcphone"
+                      inputMode="tel"
+                      placeholder="+6281234567890"
+                      value={form.vcPhone}
+                      onChange={(e) => update("vcPhone", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vcemail">Email</Label>
+                    <Input
+                      id="vcemail"
+                      type="email"
+                      inputMode="email"
+                      placeholder="nama@perusahaan.com"
+                      value={form.vcEmail}
+                      onChange={(e) => update("vcEmail", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="vcorg">Perusahaan / Organisasi</Label>
+                    <Input
+                      id="vcorg"
+                      placeholder="PT Contoh Sukses"
+                      value={form.vcOrg}
+                      onChange={(e) => update("vcOrg", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vctitle">Jabatan</Label>
+                    <Input
+                      id="vctitle"
+                      placeholder="Founder"
+                      value={form.vcTitle}
+                      onChange={(e) => update("vcTitle", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vcurl">Website</Label>
+                  <Input
+                    id="vcurl"
+                    inputMode="url"
+                    placeholder="https://tokosaya.com"
+                    value={form.vcUrl}
+                    onChange={(e) => update("vcUrl", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vcaddr">Alamat</Label>
+                  <Textarea
+                    id="vcaddr"
+                    placeholder="Jl. Mawar No. 5, Jakarta"
+                    value={form.vcAddr}
+                    onChange={(e) => update("vcAddr", e.target.value)}
+                    rows={2}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Scan sekali → HP menawarkan simpan ke Kontak. Format vCard 3.0 standar,
+                  kompatibel iPhone & Android.
+                </p>
+              </TabsContent>
             </Tabs>
           </section>
 
