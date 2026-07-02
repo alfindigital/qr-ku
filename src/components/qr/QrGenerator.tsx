@@ -643,6 +643,23 @@ export function QrGenerator() {
     reader.readAsDataURL(file);
   }
 
+  async function handleShareEditorUrl() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    const state = { type, form, color, bgTransparent, bgColor, shape, caption, ecLevel, printSize };
+    const encoded = encodeState(state);
+    const url = `${window.location.origin}${window.location.pathname}?s=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link editor disalin — tempel di WA/email untuk berbagi");
+    } catch {
+      // Fallback for browsers without clipboard perms
+      window.prompt("Salin link ini:", url);
+    }
+  }
+
   function loadFromHistory(item: QrHistoryItem) {
     setType(item.type as ContentType);
     setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
