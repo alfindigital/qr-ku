@@ -1210,16 +1210,52 @@ export function QrGenerator() {
               </p>
             )}
 
+            {hasData && !bgTransparent && contrastRatio(color, bgColor) < 3 && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>
+                  Kontras warna QR & background rendah — mungkin susah di-scan.
+                  Coba warna lebih gelap atau background lebih terang.
+                </span>
+              </div>
+            )}
+
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <Button
-                onClick={handleDownload}
-                disabled={!hasData}
-                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
-                title="Download PNG"
-              >
-                <Download className="h-5 w-5 shrink-0" />
-                Unduh
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    disabled={!hasData}
+                    className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
+                    title="Download QR (PNG / SVG / PDF)"
+                  >
+                    <Download className="h-5 w-5 shrink-0" />
+                    Unduh
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuItem onClick={handleDownloadPng}>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">PNG (gambar biasa)</span>
+                      <span className="text-[10px] text-muted-foreground">Cocok untuk WA, IG, dokumen</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDownloadSvg}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">SVG (vektor)</span>
+                      <span className="text-[10px] text-muted-foreground">Tidak pecah saat diperbesar</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDownloadPdf}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">PDF A4</span>
+                      <span className="text-[10px] text-muted-foreground">Siap print tanpa edit</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
@@ -1251,6 +1287,17 @@ export function QrGenerator() {
                 Simpan
               </Button>
             </div>
+
+            <button
+              type="button"
+              onClick={handleShareEditorUrl}
+              disabled={!hasData}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-md py-2 text-xs text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
+              title="Salin link editor untuk dibagikan ke tim"
+            >
+              <Link2 className="h-3.5 w-3.5" />
+              Salin link editor (untuk revisi bareng tim)
+            </button>
           </div>
           </div>
         </aside>
