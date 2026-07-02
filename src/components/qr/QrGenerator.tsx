@@ -4,6 +4,7 @@ import QRCodeStyling, {
   type DotType,
   type Options as QrOptions,
 } from "qr-code-styling";
+import jsPDF from "jspdf";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +20,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Link as LinkIcon,
   MessageCircle,
@@ -37,11 +44,25 @@ import {
   Pencil,
   Save,
   Plus,
+  User as UserIcon,
+  FileText,
+  Image as ImageIcon,
+  AlertTriangle,
+  Link2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
+import {
+  buildVCard,
+  contrastRatio,
+  decodeState,
+  encodeState,
+  EC_LEVELS,
+  PRINT_SIZES,
+} from "@/lib/qr-utils";
 
-type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi";
+type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi" | "vcard";
+type EcLevel = "L" | "M" | "Q" | "H";
 
 type Theme = {
   id: string;
@@ -123,6 +144,9 @@ type DraftState = {
   shape: DotType;
   logo: string | null;
   caption: string;
+  bgColor?: string;
+  ecLevel?: EcLevel;
+  printSize?: string;
 };
 
 
@@ -148,6 +172,13 @@ type FormState = {
   wifiPass: string;
   wifiEnc: "WPA" | "WEP" | "nopass";
   wifiHidden: boolean;
+  vcName: string;
+  vcPhone: string;
+  vcEmail: string;
+  vcOrg: string;
+  vcTitle: string;
+  vcUrl: string;
+  vcAddr: string;
 };
 
 const INITIAL_FORM: FormState = {
@@ -166,6 +197,13 @@ const INITIAL_FORM: FormState = {
   wifiPass: "",
   wifiEnc: "WPA",
   wifiHidden: false,
+  vcName: "",
+  vcPhone: "",
+  vcEmail: "",
+  vcOrg: "",
+  vcTitle: "",
+  vcUrl: "",
+  vcAddr: "",
 };
 
 function escapeWifi(v: string) {
@@ -222,6 +260,19 @@ function buildData(type: ContentType, f: FormState) {
     const hiddenPart = f.wifiHidden ? "H:true;" : "";
     return `WIFI:T:${enc};S:${escapeWifi(ssid)};${passPart}${hiddenPart};`;
   }
+  if (type === "vcard") {
+    const name = f.vcName.trim();
+    if (!name) return "";
+    return buildVCard({
+      name,
+      org: f.vcOrg.trim(),
+      title: f.vcTitle.trim(),
+      phone: f.vcPhone.trim(),
+      email: f.vcEmail.trim(),
+      url: f.vcUrl.trim(),
+      address: f.vcAddr.trim(),
+    });
+  }
   return f.text.trim();
 }
 
@@ -233,6 +284,7 @@ const TAB_LABELS: Record<ContentType, string> = {
   phone: "Telepon",
   geo: "Lokasi",
   wifi: "WiFi",
+  vcard: "Kartu Nama",
 };
 
 export function QrGenerator() {
@@ -250,13 +302,44 @@ export function QrGenerator() {
   );
   const [color, setColor] = useState<string>(THEMES[0].hex);
   const [bgTransparent, setBgTransparent] = useState<boolean>(false);
+  const [bgColor, setBgColor] = useState<string>("#ffffff");
   const [shape, setShape] = useState<DotType>("rounded");
   const [logo, setLogo] = useState<string | null>(null);
   const [caption, setCaption] = useState<string>("");
+  const [ecLevel, setEcLevel] = useState<EcLevel>("M");
+  const [printSize, setPrintSize] = useState<string>("medium");
 
   // Load persisted draft once on mount to avoid SSR/CSR hydration mismatch.
   useEffect(() => {
     try {
+      // 1) URL share state (?s=...) takes priority over localStorage draft
+      const params = new URLSearchParams(window.location.search);
+      const shared = params.get("s");
+      if (shared) {
+        const st = decodeState<Partial<DraftState>>(shared);
+        if (st) {
+          if (st.type && TAB_LABELS[st.type as ContentType]) setType(st.type as ContentType);
+          if (st.form) setForm((f) => ({ ...f, ...st.form }));
+          if (st.color) setColor(st.color);
+          if (typeof st.bgTransparent === "boolean") setBgTransparent(st.bgTransparent);
+          if (st.bgColor) setBgColor(st.bgColor);
+          if (st.shape && ["square", "rounded", "dots"].includes(st.shape)) {
+            setShape(st.shape as DotType);
+          }
+          if (typeof st.caption === "string") setCaption(st.caption);
+          if (st.ecLevel) setEcLevel(st.ecLevel);
+          if (st.printSize) setPrintSize(st.printSize);
+          setHydrated(true);
+          toast.success("Editor QR dimuat dari link bagikan");
+          return;
+        }
+      }
+      // 2) Query param ?type= from landing pages
+      const qType = params.get("type");
+      if (qType && TAB_LABELS[qType as ContentType]) {
+        setType(qType as ContentType);
+      }
+      // 3) localStorage draft
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<DraftState>;
@@ -272,6 +355,9 @@ export function QrGenerator() {
         if (parsed.color) setColor(parsed.color);
         else if (validTheme) setColor(validTheme.hex);
         if (typeof parsed.bgTransparent === "boolean") setBgTransparent(parsed.bgTransparent);
+        if (parsed.bgColor) setBgColor(parsed.bgColor);
+        if (parsed.ecLevel) setEcLevel(parsed.ecLevel);
+        if (parsed.printSize) setPrintSize(parsed.printSize);
         if (parsed.shape && ["square", "rounded", "dots"].includes(parsed.shape)) {
           setShape(parsed.shape as DotType);
         }
@@ -309,13 +395,16 @@ export function QrGenerator() {
       shape,
       logo,
       caption,
+      bgColor,
+      ecLevel,
+      printSize,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch {
       // ignore quota errors (e.g. oversized logo)
     }
-  }, [hydrated, type, form, themeId, color, bgTransparent, shape, logo, caption]);
+  }, [hydrated, type, form, themeId, color, bgTransparent, shape, logo, caption, bgColor, ecLevel, printSize]);
 
   function applyTheme(id: string) {
     const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
@@ -363,10 +452,10 @@ export function QrGenerator() {
       type: "svg",
       data: data || " ",
       margin: 8,
-      qrOptions: { errorCorrectionLevel: "H" },
+      qrOptions: { errorCorrectionLevel: logo ? "H" : ecLevel },
       dotsOptions: { color, type: shape },
       backgroundOptions: {
-        color: bgTransparent ? "transparent" : "#ffffff",
+        color: bgTransparent ? "transparent" : bgColor,
       },
       cornersSquareOptions: { color, type: shape === "dots" ? "extra-rounded" : "square" },
       cornersDotOptions: { color, type: shape === "dots" ? "dot" : "square" },
@@ -378,7 +467,7 @@ export function QrGenerator() {
         hideBackgroundDots: true,
       },
     }),
-    [data, color, shape, bgTransparent, logo, qrSize],
+    [data, color, shape, bgTransparent, bgColor, logo, qrSize, ecLevel],
   );
 
   useEffect(() => {
@@ -408,7 +497,7 @@ export function QrGenerator() {
     canvas.height = size + padding;
     const ctx = canvas.getContext("2d")!;
     if (!bgTransparent) {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     ctx.drawImage(img, 0, 0, size, size);
@@ -423,12 +512,28 @@ export function QrGenerator() {
     return canvas;
   }
 
-  async function handleDownload() {
+  function currentPrintSize(): number {
+    return PRINT_SIZES.find((p) => p.id === printSize)?.px ?? 1024;
+  }
+
+  function saveToHistory() {
+    history.save({
+      type,
+      label: TAB_LABELS[type],
+      data,
+      color,
+      shape: String(shape),
+      caption,
+      form: { ...form },
+    });
+  }
+
+  async function handleDownloadPng() {
     if (!hasData) {
       toast.error("Isi dulu kontennya ya");
       return;
     }
-    const canvas = await renderToCanvas(1024);
+    const canvas = await renderToCanvas(currentPrintSize());
     if (!canvas) return;
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -437,17 +542,51 @@ export function QrGenerator() {
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
-      toast.success("QR berhasil diunduh");
-      history.save({
-        type,
-        label: TAB_LABELS[type],
-        data,
-        color,
-        shape: String(shape),
-        caption,
-        form: { ...form },
-      });
+      toast.success("PNG berhasil diunduh");
+      saveToHistory();
     }, "image/png");
+  }
+
+  async function handleDownloadSvg() {
+    if (!hasData || !qrRef.current) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    try {
+      const blob = (await qrRef.current.getRawData("svg")) as Blob | null;
+      if (!blob) return;
+      const link = document.createElement("a");
+      link.download = `qr-${Date.now()}.svg`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      toast.success("SVG berhasil diunduh (vektor, tidak pecah saat diperbesar)");
+      saveToHistory();
+    } catch {
+      toast.error("Gagal membuat SVG");
+    }
+  }
+
+  async function handleDownloadPdf() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    const canvas = await renderToCanvas(1600);
+    if (!canvas) return;
+    try {
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const size = 120; // 12cm QR in center
+      const x = (pageW - size) / 2;
+      const y = 30;
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", x, y, size, size * (canvas.height / canvas.width));
+      pdf.save(`qr-${Date.now()}.pdf`);
+      toast.success("PDF berhasil diunduh");
+      saveToHistory();
+    } catch {
+      toast.error("Gagal membuat PDF");
+    }
   }
 
   async function handleCopy() {
@@ -502,6 +641,23 @@ export function QrGenerator() {
     const reader = new FileReader();
     reader.onload = () => setLogo(reader.result as string);
     reader.readAsDataURL(file);
+  }
+
+  async function handleShareEditorUrl() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    const state = { type, form, color, bgTransparent, bgColor, shape, caption, ecLevel, printSize };
+    const encoded = encodeState(state);
+    const url = `${window.location.origin}${window.location.pathname}?s=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link editor disalin — tempel di WA/email untuk berbagi");
+    } catch {
+      // Fallback for browsers without clipboard perms
+      window.prompt("Salin link ini:", url);
+    }
   }
 
   function loadFromHistory(item: QrHistoryItem) {
@@ -681,7 +837,7 @@ export function QrGenerator() {
               1. Pilih jenis isi
             </h2>
             <Tabs value={type} onValueChange={(v) => setType(v as ContentType)}>
-              <TabsList className="grid h-auto w-full grid-cols-4 gap-1 bg-muted p-1 sm:grid-cols-7">
+              <TabsList className="grid h-auto w-full grid-cols-4 gap-1 bg-muted p-1 sm:grid-cols-8">
                 <TabsTrigger value="url" className="flex h-11 flex-col gap-0.5 text-xs">
                   <LinkIcon className="h-4 w-4" />
                   Link
@@ -689,6 +845,10 @@ export function QrGenerator() {
                 <TabsTrigger value="wa" className="flex h-11 flex-col gap-0.5 text-xs">
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
+                </TabsTrigger>
+                <TabsTrigger value="vcard" className="flex h-11 flex-col gap-0.5 text-xs">
+                  <UserIcon className="h-4 w-4" />
+                  Kartu Nama
                 </TabsTrigger>
                 <TabsTrigger value="text" className="flex h-11 flex-col gap-0.5 text-xs">
                   <Type className="h-4 w-4" />
@@ -915,6 +1075,86 @@ export function QrGenerator() {
                   </p>
                 </div>
               </TabsContent>
+
+              <TabsContent value="vcard" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="vcname">Nama Lengkap *</Label>
+                  <Input
+                    id="vcname"
+                    placeholder="Contoh: Alfin Digital"
+                    value={form.vcName}
+                    onChange={(e) => update("vcName", e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="vcphone">Nomor HP</Label>
+                    <Input
+                      id="vcphone"
+                      inputMode="tel"
+                      placeholder="+6281234567890"
+                      value={form.vcPhone}
+                      onChange={(e) => update("vcPhone", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vcemail">Email</Label>
+                    <Input
+                      id="vcemail"
+                      type="email"
+                      inputMode="email"
+                      placeholder="nama@perusahaan.com"
+                      value={form.vcEmail}
+                      onChange={(e) => update("vcEmail", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="vcorg">Perusahaan / Organisasi</Label>
+                    <Input
+                      id="vcorg"
+                      placeholder="PT Contoh Sukses"
+                      value={form.vcOrg}
+                      onChange={(e) => update("vcOrg", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vctitle">Jabatan</Label>
+                    <Input
+                      id="vctitle"
+                      placeholder="Founder"
+                      value={form.vcTitle}
+                      onChange={(e) => update("vcTitle", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vcurl">Website</Label>
+                  <Input
+                    id="vcurl"
+                    inputMode="url"
+                    placeholder="https://tokosaya.com"
+                    value={form.vcUrl}
+                    onChange={(e) => update("vcUrl", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vcaddr">Alamat</Label>
+                  <Textarea
+                    id="vcaddr"
+                    placeholder="Jl. Mawar No. 5, Jakarta"
+                    value={form.vcAddr}
+                    onChange={(e) => update("vcAddr", e.target.value)}
+                    rows={2}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Scan sekali → HP menawarkan simpan ke Kontak. Format vCard 3.0 standar,
+                  kompatibel iPhone & Android.
+                </p>
+              </TabsContent>
             </Tabs>
           </section>
 
@@ -1038,6 +1278,97 @@ export function QrGenerator() {
                     />
                     Background transparan
                   </label>
+
+                  {!bgTransparent && (
+                    <div className="space-y-2">
+                      <Label className="text-sm">Warna background</Label>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {[
+                          { c: "#ffffff", label: "Putih" },
+                          { c: "#000000", label: "Hitam" },
+                          { c: "#f5f5f4", label: "Krem" },
+                          { c: "#0f172a", label: "Navy" },
+                        ].map((b) => (
+                          <button
+                            key={b.c}
+                            type="button"
+                            onClick={() => setBgColor(b.c)}
+                            title={b.label}
+                            aria-label={b.label}
+                            className={`h-9 w-9 rounded-full border-2 transition-transform ${
+                              bgColor === b.c ? "scale-110 border-foreground" : "border-border"
+                            }`}
+                            style={{ backgroundColor: b.c }}
+                          />
+                        ))}
+                        <label
+                          className="relative h-9 w-9 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                          title="Warna kustom"
+                        >
+                          <input
+                            type="color"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                          />
+                          <span className="flex h-full w-full items-center justify-center text-muted-foreground">
+                            <Plus className="h-4 w-4" />
+                          </span>
+                        </label>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Tip: pilih background gelap + dot terang untuk QR dark mode. Sistem
+                        cek kontras otomatis.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Ukuran cetak (PNG)</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {PRINT_SIZES.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setPrintSize(p.id)}
+                          className={`h-auto min-h-[52px] rounded-lg border-2 px-2 py-2 text-left text-xs transition-colors ${
+                            printSize === p.id
+                              ? "border-primary bg-primary/10 text-foreground"
+                              : "border-border bg-background text-muted-foreground"
+                          }`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Kerapatan / ketahanan (EC level)</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {EC_LEVELS.map((ec) => (
+                        <button
+                          key={ec.id}
+                          type="button"
+                          onClick={() => setEcLevel(ec.id)}
+                          disabled={!!logo}
+                          title={ec.hint}
+                          className={`h-11 rounded-lg border-2 text-xs font-medium transition-colors disabled:opacity-50 ${
+                            (logo ? "H" : ecLevel) === ec.id
+                              ? "border-primary bg-primary/10 text-foreground"
+                              : "border-border bg-background text-muted-foreground"
+                          }`}
+                        >
+                          {ec.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      {logo
+                        ? "Otomatis Maksimum karena kamu pakai logo."
+                        : EC_LEVELS.find((e) => e.id === ecLevel)?.hint}
+                    </p>
+                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>
@@ -1071,16 +1402,52 @@ export function QrGenerator() {
               </p>
             )}
 
+            {hasData && !bgTransparent && contrastRatio(color, bgColor) < 3 && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>
+                  Kontras warna QR & background rendah — mungkin susah di-scan.
+                  Coba warna lebih gelap atau background lebih terang.
+                </span>
+              </div>
+            )}
+
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <Button
-                onClick={handleDownload}
-                disabled={!hasData}
-                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
-                title="Download PNG"
-              >
-                <Download className="h-5 w-5 shrink-0" />
-                Unduh
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    disabled={!hasData}
+                    className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
+                    title="Download QR (PNG / SVG / PDF)"
+                  >
+                    <Download className="h-5 w-5 shrink-0" />
+                    Unduh
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuItem onClick={handleDownloadPng}>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">PNG (gambar biasa)</span>
+                      <span className="text-[10px] text-muted-foreground">Cocok untuk WA, IG, dokumen</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDownloadSvg}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">SVG (vektor)</span>
+                      <span className="text-[10px] text-muted-foreground">Tidak pecah saat diperbesar</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDownloadPdf}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">PDF A4</span>
+                      <span className="text-[10px] text-muted-foreground">Siap print tanpa edit</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 onClick={handleCopy}
                 disabled={!hasData}
@@ -1112,6 +1479,17 @@ export function QrGenerator() {
                 Simpan
               </Button>
             </div>
+
+            <button
+              type="button"
+              onClick={handleShareEditorUrl}
+              disabled={!hasData}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-md py-2 text-xs text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
+              title="Salin link editor untuk dibagikan ke tim"
+            >
+              <Link2 className="h-3.5 w-3.5" />
+              Salin link editor (untuk revisi bareng tim)
+            </button>
           </div>
           </div>
         </aside>
