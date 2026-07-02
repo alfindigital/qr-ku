@@ -45,8 +45,16 @@ export function useQrHistory() {
 
   const save = useCallback((item: Omit<QrHistoryItem, "id" | "createdAt">) => {
     setItems((prev) => {
+      // Never persist logo blobs in history — they are base64 and blow past
+      // localStorage quota fast. Reload from history restores form data only.
+      const strippedForm: Record<string, string | boolean> = {};
+      for (const [k, v] of Object.entries(item.form)) {
+        if (typeof v === "string" && v.startsWith("data:")) continue;
+        strippedForm[k] = v;
+      }
       const next: QrHistoryItem = {
         ...item,
+        form: strippedForm,
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         createdAt: Date.now(),
       };
