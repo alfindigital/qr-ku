@@ -497,7 +497,7 @@ export function QrGenerator() {
     canvas.height = size + padding;
     const ctx = canvas.getContext("2d")!;
     if (!bgTransparent) {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     ctx.drawImage(img, 0, 0, size, size);
@@ -512,12 +512,28 @@ export function QrGenerator() {
     return canvas;
   }
 
-  async function handleDownload() {
+  function currentPrintSize(): number {
+    return PRINT_SIZES.find((p) => p.id === printSize)?.px ?? 1024;
+  }
+
+  function saveToHistory() {
+    history.save({
+      type,
+      label: TAB_LABELS[type],
+      data,
+      color,
+      shape: String(shape),
+      caption,
+      form: { ...form },
+    });
+  }
+
+  async function handleDownloadPng() {
     if (!hasData) {
       toast.error("Isi dulu kontennya ya");
       return;
     }
-    const canvas = await renderToCanvas(1024);
+    const canvas = await renderToCanvas(currentPrintSize());
     if (!canvas) return;
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -526,17 +542,51 @@ export function QrGenerator() {
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
-      toast.success("QR berhasil diunduh");
-      history.save({
-        type,
-        label: TAB_LABELS[type],
-        data,
-        color,
-        shape: String(shape),
-        caption,
-        form: { ...form },
-      });
+      toast.success("PNG berhasil diunduh");
+      saveToHistory();
     }, "image/png");
+  }
+
+  async function handleDownloadSvg() {
+    if (!hasData || !qrRef.current) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    try {
+      const blob = (await qrRef.current.getRawData("svg")) as Blob | null;
+      if (!blob) return;
+      const link = document.createElement("a");
+      link.download = `qr-${Date.now()}.svg`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      toast.success("SVG berhasil diunduh (vektor, tidak pecah saat diperbesar)");
+      saveToHistory();
+    } catch {
+      toast.error("Gagal membuat SVG");
+    }
+  }
+
+  async function handleDownloadPdf() {
+    if (!hasData) {
+      toast.error("Isi dulu kontennya ya");
+      return;
+    }
+    const canvas = await renderToCanvas(1600);
+    if (!canvas) return;
+    try {
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const size = 120; // 12cm QR in center
+      const x = (pageW - size) / 2;
+      const y = 30;
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", x, y, size, size * (canvas.height / canvas.width));
+      pdf.save(`qr-${Date.now()}.pdf`);
+      toast.success("PDF berhasil diunduh");
+      saveToHistory();
+    } catch {
+      toast.error("Gagal membuat PDF");
+    }
   }
 
   async function handleCopy() {
