@@ -1278,6 +1278,97 @@ export function QrGenerator() {
                     />
                     Background transparan
                   </label>
+
+                  {!bgTransparent && (
+                    <div className="space-y-2">
+                      <Label className="text-sm">Warna background</Label>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {[
+                          { c: "#ffffff", label: "Putih" },
+                          { c: "#000000", label: "Hitam" },
+                          { c: "#f5f5f4", label: "Krem" },
+                          { c: "#0f172a", label: "Navy" },
+                        ].map((b) => (
+                          <button
+                            key={b.c}
+                            type="button"
+                            onClick={() => setBgColor(b.c)}
+                            title={b.label}
+                            aria-label={b.label}
+                            className={`h-9 w-9 rounded-full border-2 transition-transform ${
+                              bgColor === b.c ? "scale-110 border-foreground" : "border-border"
+                            }`}
+                            style={{ backgroundColor: b.c }}
+                          />
+                        ))}
+                        <label
+                          className="relative h-9 w-9 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                          title="Warna kustom"
+                        >
+                          <input
+                            type="color"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                          />
+                          <span className="flex h-full w-full items-center justify-center text-muted-foreground">
+                            <Plus className="h-4 w-4" />
+                          </span>
+                        </label>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Tip: pilih background gelap + dot terang untuk QR dark mode. Sistem
+                        cek kontras otomatis.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Ukuran cetak (PNG)</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {PRINT_SIZES.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setPrintSize(p.id)}
+                          className={`h-auto min-h-[52px] rounded-lg border-2 px-2 py-2 text-left text-xs transition-colors ${
+                            printSize === p.id
+                              ? "border-primary bg-primary/10 text-foreground"
+                              : "border-border bg-background text-muted-foreground"
+                          }`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Kerapatan / ketahanan (EC level)</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {EC_LEVELS.map((ec) => (
+                        <button
+                          key={ec.id}
+                          type="button"
+                          onClick={() => setEcLevel(ec.id)}
+                          disabled={!!logo}
+                          title={ec.hint}
+                          className={`h-11 rounded-lg border-2 text-xs font-medium transition-colors disabled:opacity-50 ${
+                            (logo ? "H" : ecLevel) === ec.id
+                              ? "border-primary bg-primary/10 text-foreground"
+                              : "border-border bg-background text-muted-foreground"
+                          }`}
+                        >
+                          {ec.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      {logo
+                        ? "Otomatis Maksimum karena kamu pakai logo."
+                        : EC_LEVELS.find((e) => e.id === ecLevel)?.hint}
+                    </p>
+                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>
