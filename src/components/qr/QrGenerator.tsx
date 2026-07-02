@@ -312,6 +312,34 @@ export function QrGenerator() {
   // Load persisted draft once on mount to avoid SSR/CSR hydration mismatch.
   useEffect(() => {
     try {
+      // 1) URL share state (?s=...) takes priority over localStorage draft
+      const params = new URLSearchParams(window.location.search);
+      const shared = params.get("s");
+      if (shared) {
+        const st = decodeState<Partial<DraftState>>(shared);
+        if (st) {
+          if (st.type && TAB_LABELS[st.type as ContentType]) setType(st.type as ContentType);
+          if (st.form) setForm((f) => ({ ...f, ...st.form }));
+          if (st.color) setColor(st.color);
+          if (typeof st.bgTransparent === "boolean") setBgTransparent(st.bgTransparent);
+          if (st.bgColor) setBgColor(st.bgColor);
+          if (st.shape && ["square", "rounded", "dots"].includes(st.shape)) {
+            setShape(st.shape as DotType);
+          }
+          if (typeof st.caption === "string") setCaption(st.caption);
+          if (st.ecLevel) setEcLevel(st.ecLevel);
+          if (st.printSize) setPrintSize(st.printSize);
+          setHydrated(true);
+          toast.success("Editor QR dimuat dari link bagikan");
+          return;
+        }
+      }
+      // 2) Query param ?type= from landing pages
+      const qType = params.get("type");
+      if (qType && TAB_LABELS[qType as ContentType]) {
+        setType(qType as ContentType);
+      }
+      // 3) localStorage draft
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<DraftState>;
@@ -327,6 +355,9 @@ export function QrGenerator() {
         if (parsed.color) setColor(parsed.color);
         else if (validTheme) setColor(validTheme.hex);
         if (typeof parsed.bgTransparent === "boolean") setBgTransparent(parsed.bgTransparent);
+        if (parsed.bgColor) setBgColor(parsed.bgColor);
+        if (parsed.ecLevel) setEcLevel(parsed.ecLevel);
+        if (parsed.printSize) setPrintSize(parsed.printSize);
         if (parsed.shape && ["square", "rounded", "dots"].includes(parsed.shape)) {
           setShape(parsed.shape as DotType);
         }
@@ -364,13 +395,16 @@ export function QrGenerator() {
       shape,
       logo,
       caption,
+      bgColor,
+      ecLevel,
+      printSize,
     };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch {
       // ignore quota errors (e.g. oversized logo)
     }
-  }, [hydrated, type, form, themeId, color, bgTransparent, shape, logo, caption]);
+  }, [hydrated, type, form, themeId, color, bgTransparent, shape, logo, caption, bgColor, ecLevel, printSize]);
 
   function applyTheme(id: string) {
     const next = THEMES.find((t) => t.id === id) ?? THEMES[0];
