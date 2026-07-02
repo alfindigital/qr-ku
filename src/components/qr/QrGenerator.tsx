@@ -4,6 +4,7 @@ import QRCodeStyling, {
   type DotType,
   type Options as QrOptions,
 } from "qr-code-styling";
+import jsPDF from "jspdf";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +20,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Link as LinkIcon,
   MessageCircle,
@@ -37,11 +44,25 @@ import {
   Pencil,
   Save,
   Plus,
+  User as UserIcon,
+  FileText,
+  Image as ImageIcon,
+  AlertTriangle,
+  Link2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
+import {
+  buildVCard,
+  contrastRatio,
+  decodeState,
+  encodeState,
+  EC_LEVELS,
+  PRINT_SIZES,
+} from "@/lib/qr-utils";
 
-type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi";
+type ContentType = "url" | "wa" | "text" | "email" | "phone" | "geo" | "wifi" | "vcard";
+type EcLevel = "L" | "M" | "Q" | "H";
 
 type Theme = {
   id: string;
