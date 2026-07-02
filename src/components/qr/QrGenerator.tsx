@@ -302,9 +302,12 @@ export function QrGenerator() {
   );
   const [color, setColor] = useState<string>(THEMES[0].hex);
   const [bgTransparent, setBgTransparent] = useState<boolean>(false);
+  const [bgColor, setBgColor] = useState<string>("#ffffff");
   const [shape, setShape] = useState<DotType>("rounded");
   const [logo, setLogo] = useState<string | null>(null);
   const [caption, setCaption] = useState<string>("");
+  const [ecLevel, setEcLevel] = useState<EcLevel>("M");
+  const [printSize, setPrintSize] = useState<string>("medium");
 
   // Load persisted draft once on mount to avoid SSR/CSR hydration mismatch.
   useEffect(() => {
