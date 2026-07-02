@@ -169,6 +169,13 @@ type FormState = {
   wifiPass: string;
   wifiEnc: "WPA" | "WEP" | "nopass";
   wifiHidden: boolean;
+  vcName: string;
+  vcPhone: string;
+  vcEmail: string;
+  vcOrg: string;
+  vcTitle: string;
+  vcUrl: string;
+  vcAddr: string;
 };
 
 const INITIAL_FORM: FormState = {
@@ -187,6 +194,13 @@ const INITIAL_FORM: FormState = {
   wifiPass: "",
   wifiEnc: "WPA",
   wifiHidden: false,
+  vcName: "",
+  vcPhone: "",
+  vcEmail: "",
+  vcOrg: "",
+  vcTitle: "",
+  vcUrl: "",
+  vcAddr: "",
 };
 
 function escapeWifi(v: string) {
@@ -243,6 +257,19 @@ function buildData(type: ContentType, f: FormState) {
     const hiddenPart = f.wifiHidden ? "H:true;" : "";
     return `WIFI:T:${enc};S:${escapeWifi(ssid)};${passPart}${hiddenPart};`;
   }
+  if (type === "vcard") {
+    const name = f.vcName.trim();
+    if (!name) return "";
+    return buildVCard({
+      name,
+      org: f.vcOrg.trim(),
+      title: f.vcTitle.trim(),
+      phone: f.vcPhone.trim(),
+      email: f.vcEmail.trim(),
+      url: f.vcUrl.trim(),
+      address: f.vcAddr.trim(),
+    });
+  }
   return f.text.trim();
 }
 
@@ -254,6 +281,7 @@ const TAB_LABELS: Record<ContentType, string> = {
   phone: "Telepon",
   geo: "Lokasi",
   wifi: "WiFi",
+  vcard: "Kartu Nama",
 };
 
 export function QrGenerator() {
