@@ -452,10 +452,10 @@ export function QrGenerator() {
       type: "svg",
       data: data || " ",
       margin: 8,
-      qrOptions: { errorCorrectionLevel: "H" },
+      qrOptions: { errorCorrectionLevel: logo ? "H" : ecLevel },
       dotsOptions: { color, type: shape },
       backgroundOptions: {
-        color: bgTransparent ? "transparent" : "#ffffff",
+        color: bgTransparent ? "transparent" : bgColor,
       },
       cornersSquareOptions: { color, type: shape === "dots" ? "extra-rounded" : "square" },
       cornersDotOptions: { color, type: shape === "dots" ? "dot" : "square" },
@@ -467,7 +467,7 @@ export function QrGenerator() {
         hideBackgroundDots: true,
       },
     }),
-    [data, color, shape, bgTransparent, logo, qrSize],
+    [data, color, shape, bgTransparent, bgColor, logo, qrSize, ecLevel],
   );
 
   useEffect(() => {
