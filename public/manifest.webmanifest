@@ -1,0 +1,12 @@
+{
+  "name": "QRku — QR Code Generator Gratis",
+  "short_name": "QRku",
+  "description": "Buat QR Code gratis untuk WhatsApp, link, WiFi, dan kartu nama digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
