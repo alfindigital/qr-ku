@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SeoChecklistRouteImport } from './routes/seo-checklist'
+import { Route as QrWifiRouteImport } from './routes/qr-wifi'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -23,6 +24,11 @@ const SeoChecklistRoute = SeoChecklistRouteImport.update({
   path: '/seo-checklist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QrWifiRoute = QrWifiRouteImport.update({
+  id: '/qr-wifi',
+  path: '/qr-wifi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/qr-wifi': typeof QrWifiRoute
   '/seo-checklist': typeof SeoChecklistRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/seo-checklist' | '/sitemap.xml'
+  fullPaths: '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/seo-checklist' | '/sitemap.xml'
-  id: '__root__' | '/' | '/seo-checklist' | '/sitemap.xml'
+  to: '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
+  id: '__root__' | '/' | '/qr-wifi' | '/seo-checklist' | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  QrWifiRoute: typeof QrWifiRoute
   SeoChecklistRoute: typeof SeoChecklistRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeoChecklistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/qr-wifi': {
+      id: '/qr-wifi'
+      path: '/qr-wifi'
+      fullPath: '/qr-wifi'
+      preLoaderRoute: typeof QrWifiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  QrWifiRoute: QrWifiRoute,
   SeoChecklistRoute: SeoChecklistRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
