@@ -15,6 +15,7 @@ import { Route as QrWifiRouteImport } from './routes/qr-wifi'
 import { Route as QrWhatsappRouteImport } from './routes/qr-whatsapp'
 import { Route as QrVcardRouteImport } from './routes/qr-vcard'
 import { Route as QrMenuRestoranRouteImport } from './routes/qr-menu-restoran'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -47,6 +48,11 @@ const QrMenuRestoranRoute = QrMenuRestoranRouteImport.update({
   path: '/qr-menu-restoran',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
   '/qr-whatsapp': typeof QrWhatsappRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
   '/qr-whatsapp': typeof QrWhatsappRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
   '/qr-whatsapp': typeof QrWhatsappRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
     | '/qr-whatsapp'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
     | '/qr-whatsapp'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
     | '/qr-whatsapp'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HistoryRoute: typeof HistoryRoute
   QrMenuRestoranRoute: typeof QrMenuRestoranRoute
   QrVcardRoute: typeof QrVcardRoute
   QrWhatsappRoute: typeof QrWhatsappRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QrMenuRestoranRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HistoryRoute: HistoryRoute,
   QrMenuRestoranRoute: QrMenuRestoranRoute,
   QrVcardRoute: QrVcardRoute,
   QrWhatsappRoute: QrWhatsappRoute,

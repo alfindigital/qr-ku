@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "@tanstack/react-router";
 import QRCodeStyling, {
   type DotType,
   type Options as QrOptions,
@@ -15,11 +16,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +37,6 @@ import {
   MapPin,
   Wifi,
   History,
-  Pencil,
   Save,
   Plus,
   User as UserIcon,
@@ -51,7 +46,7 @@ import {
   Link2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
+import { useQrHistory } from "@/hooks/use-qr-history";
 import {
   buildVCard,
   contrastRatio,
@@ -125,14 +120,6 @@ const THEMES: Theme[] = [
 
 const THEME_STORAGE_KEY = "qrku.theme";
 const DRAFT_KEY = "qrku:draft";
-const POPOVER_POS_KEY = "qrku:historyPopoverPos";
-
-type PopoverPos = "end" | "center" | "start";
-const POPOVER_POS_OPTIONS: { id: PopoverPos; label: string; title: string }[] = [
-  { id: "end", label: "Kanan", title: "Sejajar kanan tombol" },
-  { id: "center", label: "Tengah", title: "Di tengah tombol" },
-  { id: "start", label: "Kiri", title: "Sejajar kiri tombol" },
-];
 
 type DraftState = {
   type: ContentType;
@@ -151,7 +138,7 @@ type DraftState = {
 
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
-  { id: "rounded", label: "Sudut Tumpul" },
+  { id: "rounded", label: "Tumpul" },
   { id: "dots", label: "Titik Bulat" },
 ];
 
