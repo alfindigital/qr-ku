@@ -721,7 +721,7 @@ export function QrGenerator() {
                   placeholder="contoh: tokosaya.com"
                   value={form.url}
                   onChange={(e) => update("url", e.target.value)}
-                  className="h-12 text-base"
+                  className="h-11 text-base"
                 />
               </TabsContent>
 
@@ -734,7 +734,7 @@ export function QrGenerator() {
                     placeholder="08123456789"
                     value={form.waNumber}
                     onChange={(e) => update("waNumber", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -770,7 +770,7 @@ export function QrGenerator() {
                     placeholder="nama@email.com"
                     value={form.email}
                     onChange={(e) => update("email", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -780,6 +780,7 @@ export function QrGenerator() {
                     placeholder="Pertanyaan produk"
                     value={form.emailSubject}
                     onChange={(e) => update("emailSubject", e.target.value)}
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -802,7 +803,7 @@ export function QrGenerator() {
                   placeholder="08123456789"
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
-                  className="h-12 text-base"
+                  className="h-11 text-base"
                 />
               </TabsContent>
 
@@ -814,6 +815,7 @@ export function QrGenerator() {
                     placeholder="https://maps.google.com/?q=..."
                     value={form.geoLink}
                     onChange={(e) => update("geoLink", e.target.value)}
+                    className="h-11 text-base"
                   />
                 </div>
               </TabsContent>
@@ -826,7 +828,7 @@ export function QrGenerator() {
                     placeholder="Contoh: MyCafe_WiFi"
                     value={form.wifiSsid}
                     onChange={(e) => update("wifiSsid", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -837,6 +839,7 @@ export function QrGenerator() {
                     value={form.wifiPass}
                     onChange={(e) => update("wifiPass", e.target.value)}
                     disabled={form.wifiEnc === "nopass"}
+                    className="h-11 text-base"
                   />
                   {form.wifiEnc === "nopass" && (
                     <p className="text-xs text-muted-foreground">
@@ -890,7 +893,7 @@ export function QrGenerator() {
                     placeholder="Contoh: Budi Santoso"
                     value={form.vcName}
                     onChange={(e) => update("vcName", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -902,6 +905,7 @@ export function QrGenerator() {
                       placeholder="+6281234567890"
                       value={form.vcPhone}
                       onChange={(e) => update("vcPhone", e.target.value)}
+                      className="h-11 text-base"
                     />
                   </div>
                   <div className="space-y-2">
@@ -913,6 +917,7 @@ export function QrGenerator() {
                       placeholder="budi@perusahaan.com"
                       value={form.vcEmail}
                       onChange={(e) => update("vcEmail", e.target.value)}
+                      className="h-11 text-base"
                     />
                   </div>
                 </div>
@@ -924,6 +929,7 @@ export function QrGenerator() {
                       placeholder="PT Maju Bersama"
                       value={form.vcOrg}
                       onChange={(e) => update("vcOrg", e.target.value)}
+                      className="h-11 text-base"
                     />
                   </div>
                   <div className="space-y-2">
@@ -933,6 +939,7 @@ export function QrGenerator() {
                       placeholder="Manajer Pemasaran"
                       value={form.vcTitle}
                       onChange={(e) => update("vcTitle", e.target.value)}
+                      className="h-11 text-base"
                     />
                   </div>
                 </div>
@@ -944,6 +951,7 @@ export function QrGenerator() {
                     placeholder="https://perusahaan.com"
                     value={form.vcUrl}
                     onChange={(e) => update("vcUrl", e.target.value)}
+                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -1067,7 +1075,7 @@ export function QrGenerator() {
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       maxLength={24}
-                      className="h-11"
+                      className="h-11 text-base"
                     />
                   </div>
 
