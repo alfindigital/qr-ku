@@ -721,7 +721,7 @@ export function QrGenerator() {
                   placeholder="contoh: tokosaya.com"
                   value={form.url}
                   onChange={(e) => update("url", e.target.value)}
-                  className="h-12 text-base"
+                  className="h-11 text-base"
                 />
               </TabsContent>
 
