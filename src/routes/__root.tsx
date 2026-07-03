@@ -116,13 +116,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
             __html: `
               (function() {
                 var theme = localStorage.getItem('theme');
-                if (!theme || theme === 'system') {
-                  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.documentElement.classList.add('dark');
-                  }
-                } else if (theme === 'dark') {
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else if (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                   document.documentElement.classList.add('dark');
                 }
+                // default (no saved theme) = light, no class added
               })();
             `,
           }}

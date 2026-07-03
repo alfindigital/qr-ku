@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 type ThemeMode = "light" | "dark" | "system";
 
 const ORDER: ThemeMode[] = ["light", "dark", "system"];
+const DEFAULT_MODE: ThemeMode = "light";
 
 function getSystemDark() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -16,11 +17,11 @@ function applyTheme(mode: ThemeMode) {
 }
 
 export function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>("system");
+  const [mode, setMode] = useState<ThemeMode>(DEFAULT_MODE);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as ThemeMode | null;
-    const initial: ThemeMode = saved && ORDER.includes(saved) ? saved : "system";
+    const initial: ThemeMode = saved && ORDER.includes(saved) ? saved : DEFAULT_MODE;
     setMode(initial);
     applyTheme(initial);
 
