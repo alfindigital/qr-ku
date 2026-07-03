@@ -85,14 +85,6 @@ const THEMES: Theme[] = [
     primaryForeground: "oklch(0.99 0.005 260)",
   },
   {
-    id: "ungu",
-    label: "Ungu",
-    hex: "#9333ea",
-    primary: "oklch(0.55 0.24 300)",
-    primaryGlow: "oklch(0.68 0.2 300)",
-    primaryForeground: "oklch(0.99 0.005 300)",
-  },
-  {
     id: "merah",
     label: "Merah",
     hex: "#dc2626",
@@ -976,13 +968,13 @@ export function QrGenerator() {
             <div className="space-y-5">
               <div>
                 <Label className="mb-2 block">Tema warna</Label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-nowrap items-center gap-2">
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => applyTheme(t.id)}
-                      className={`h-9 flex-1 min-w-[44px] rounded-full border-2 transition-transform ${
+                      className={`h-9 w-10 shrink-0 rounded-full border-2 transition-transform ${
                         themeId === t.id
                           ? "scale-105 border-foreground"
                           : "border-transparent"
@@ -993,7 +985,7 @@ export function QrGenerator() {
                     />
                   ))}
                   <label
-                    className="relative h-9 flex-1 min-w-[44px] cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                    className="relative ml-auto h-9 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
                     title="Warna kustom"
                   >
                     <input
