@@ -573,28 +573,6 @@ export function QrGenerator() {
     }
   }
 
-  async function handleShare() {
-    if (!hasData) {
-      toast.error("Isi dulu kontennya ya");
-      return;
-    }
-    try {
-      const canvas = await renderToCanvas(1024);
-      if (!canvas) return;
-      const blob: Blob = await new Promise((resolve) =>
-        canvas.toBlob((b) => resolve(b!), "image/png"),
-      );
-      const file = new File([blob], "qr-code.png", { type: "image/png" });
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "QR Code" });
-      } else {
-        toast.error("Bagikan tidak didukung di perangkat ini");
-      }
-    } catch {
-      // user cancelled
-    }
-  }
-
   function onLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
