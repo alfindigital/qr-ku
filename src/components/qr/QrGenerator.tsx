@@ -131,7 +131,7 @@ type DraftState = {
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
   { id: "rounded", label: "Tumpul" },
-  { id: "dots", label: "Titik Bulat" },
+  { id: "dots", label: "Bulat" },
 ];
 
 type FormState = {
