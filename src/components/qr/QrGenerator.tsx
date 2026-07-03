@@ -602,22 +602,6 @@ export function QrGenerator() {
     }
   }
 
-  function handleSave() {
-    if (!hasData) {
-      toast.error("Isi dulu kontennya ya");
-      return;
-    }
-    history.save({
-      type,
-      label: TAB_LABELS[type],
-      data,
-      color,
-      shape: String(shape),
-      caption,
-      form: { ...form },
-    });
-    toast.success("Tersimpan di riwayat");
-  }
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
