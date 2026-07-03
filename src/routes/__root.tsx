@@ -140,7 +140,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Outlet />
-        <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t px-3 py-3 sm:gap-x-2.5">
+        <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t-2 border-brand px-3 py-3 sm:gap-x-2.5">
           <span className="text-[11px] text-muted-foreground">
             by <span className="font-medium text-foreground">@alfindigital</span>
           </span>
