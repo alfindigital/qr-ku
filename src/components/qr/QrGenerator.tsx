@@ -57,7 +57,6 @@ import {
   contrastRatio,
   decodeState,
   encodeState,
-  EC_LEVELS,
   PRINT_SIZES,
 } from "@/lib/qr-utils";
 
