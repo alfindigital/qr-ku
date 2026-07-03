@@ -63,10 +63,10 @@ export function decodeState<T = unknown>(s: string): T | null {
 }
 
 export const PRINT_SIZES: { id: string; label: string; px: number }[] = [
-  { id: "small", label: "Stiker meja 5cm (600px)", px: 600 },
-  { id: "medium", label: "Umum (1024px)", px: 1024 },
-  { id: "a4", label: "Flyer A4 300dpi (2480px)", px: 2480 },
-  { id: "a3", label: "Poster A3 300dpi (3508px)", px: 3508 },
+  { id: "small", label: "Stiker 5cm", px: 600 },
+  { id: "medium", label: "Standar", px: 1024 },
+  { id: "a4", label: "Flyer A4", px: 2480 },
+  { id: "a3", label: "Poster A3", px: 3508 },
 ];
 
 export const EC_LEVELS: { id: "L" | "M" | "Q" | "H"; label: string; hint: string }[] = [
