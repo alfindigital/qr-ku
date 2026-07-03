@@ -872,18 +872,14 @@ export function QrGenerator() {
                   />
                   Jaringan tersembunyi (hidden SSID)
                 </label>
-                <div className="rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
-                  <p className="mb-1 font-medium text-foreground">Format yang dihasilkan:</p>
-                  <code className="block break-all rounded bg-background px-2 py-1 text-[11px]">
+                <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+                  <code className="block break-all text-xs text-muted-foreground">
                     WIFI:T:{form.wifiEnc || "WPA"};S:{form.wifiSsid.trim() || "NamaWiFi"};
                     {form.wifiEnc === "nopass" ? "" : `P:${form.wifiPass || "password"};`}
-                    {form.wifiHidden ? "H:true;" : ""};
+                    {form.wifiHidden ? "H:true;" : ""}
                   </code>
-                  <p className="mt-1.5">
-                    SSID = nama jaringan. T = tipe keamanan (WPA/WEP/nopass).
-                    P = password (hilangkan jika nopass). H:true = hidden.
-                  </p>
                 </div>
+
               </TabsContent>
 
               <TabsContent value="vcard" className="mt-4 space-y-3">
