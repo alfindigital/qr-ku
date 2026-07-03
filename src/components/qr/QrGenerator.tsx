@@ -940,7 +940,7 @@ export function QrGenerator() {
                     />
                   ))}
                   <label
-                    className="relative ml-auto h-9 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-black/10 dark:border-white/20"
+                    className="relative h-9 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-black/10 dark:border-white/20"
                     title="Warna kustom"
                   >
                     <input
