@@ -931,8 +931,8 @@ export function QrGenerator() {
                       onClick={() => applyTheme(t.id)}
                       className={`h-9 w-10 shrink-0 rounded-full border-2 transition-transform ${
                         themeId === t.id
-                          ? "scale-105 border-foreground"
-                          : "border-transparent"
+                          ? "scale-105 border-foreground ring-2 ring-offset-1"
+                          : "border-black/10 dark:border-white/20"
                       }`}
                       style={{ backgroundColor: t.hex }}
                       title={t.label}
@@ -940,7 +940,7 @@ export function QrGenerator() {
                     />
                   ))}
                   <label
-                    className="relative ml-auto h-9 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-border"
+                    className="relative ml-auto h-9 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-black/10 dark:border-white/20"
                     title="Warna kustom"
                   >
                     <input
