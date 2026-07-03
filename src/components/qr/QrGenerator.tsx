@@ -804,14 +804,11 @@ export function QrGenerator() {
                   onChange={(e) => update("phone", e.target.value)}
                   className="h-12 text-base"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Scan untuk langsung menelepon nomor ini.
-                </p>
               </TabsContent>
 
               <TabsContent value="geo" className="mt-4 space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="glink">Link Google Maps (opsional)</Label>
+                  <Label htmlFor="glink">Link Google Maps</Label>
                   <Input
                     id="glink"
                     placeholder="https://maps.google.com/?q=..."
@@ -819,31 +816,6 @@ export function QrGenerator() {
                     onChange={(e) => update("geoLink", e.target.value)}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="lat">Latitude</Label>
-                    <Input
-                      id="lat"
-                      inputMode="decimal"
-                      placeholder="-6.2088"
-                      value={form.geoLat}
-                      onChange={(e) => update("geoLat", e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lng">Longitude</Label>
-                    <Input
-                      id="lng"
-                      inputMode="decimal"
-                      placeholder="106.8456"
-                      value={form.geoLng}
-                      onChange={(e) => update("geoLng", e.target.value)}
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Jika link diisi, lat/lng diabaikan.
-                </p>
               </TabsContent>
 
               <TabsContent value="wifi" className="mt-4 space-y-3">
@@ -856,9 +828,6 @@ export function QrGenerator() {
                     onChange={(e) => update("wifiSsid", e.target.value)}
                     className="h-12 text-base"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Contoh: MyCafe_WiFi
-                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="wpass">Password</Label>
@@ -869,11 +838,11 @@ export function QrGenerator() {
                     onChange={(e) => update("wifiPass", e.target.value)}
                     disabled={form.wifiEnc === "nopass"}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {form.wifiEnc === "nopass"
-                      ? "Dinonaktifkan karena mode Tanpa Password dipilih."
-                      : "Contoh: cafepass123"}
-                  </p>
+                  {form.wifiEnc === "nopass" && (
+                    <p className="text-xs text-muted-foreground">
+                      Dinonaktifkan karena mode Tanpa Password dipilih.
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Tipe Keamanan</Label>
@@ -1153,10 +1122,6 @@ export function QrGenerator() {
                           </span>
                         </label>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">
-                        Tip: pilih background gelap + dot terang untuk QR dark mode. Sistem
-                        cek kontras otomatis.
-                      </p>
                     </div>
                   )}
 
