@@ -407,18 +407,6 @@ export function QrGenerator() {
   const qrRef = useRef<QRCodeStyling | null>(null);
   const [qrSize, setQrSize] = useState(280);
 
-  const [popoverPos, setPopoverPos] = useState<PopoverPos>("end");
-  useEffect(() => {
-    const v = typeof window !== "undefined" ? localStorage.getItem(POPOVER_POS_KEY) : null;
-    if (v === "center" || v === "start" || v === "end") setPopoverPos(v);
-  }, []);
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(POPOVER_POS_KEY, popoverPos);
-    } catch {}
-  }, [hydrated, popoverPos]);
-
   useEffect(() => {
     if (!wrapRef.current) return;
     const ro = new ResizeObserver((entries) => {
