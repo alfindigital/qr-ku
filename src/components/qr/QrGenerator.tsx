@@ -1125,7 +1125,8 @@ export function QrGenerator() {
 
             {!hasData && (
               <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
-                Isi kontennya dulu di sebelah kiri, QR muncul otomatis di sini.
+                <span className="sm:hidden">Isi konten di kiri, QR muncul otomatis.</span>
+                <span className="hidden sm:inline">Isi kontennya dulu di sebelah kiri, QR muncul otomatis di sini.</span>
               </p>
             )}
 
