@@ -288,9 +288,13 @@ export function QrGenerator() {
   // Load persisted draft once on mount to avoid SSR/CSR hydration mismatch.
   useEffect(() => {
     try {
-      // 1) URL share state (?s=...) takes priority over localStorage draft
+      // 1) URL share state (#s=...) takes priority over localStorage draft.
+      // Hash fragments are NEVER sent to the server, keeping sensitive
+      // form data (WiFi passwords, vCard info, etc.) out of server logs.
       const params = new URLSearchParams(window.location.search);
-      const shared = params.get("s");
+      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+      const hashParams = new URLSearchParams(hash);
+      const shared = hashParams.get("s") ?? params.get("s");
       if (shared) {
         const st = decodeState<Partial<DraftState>>(shared);
         if (st) {
@@ -592,7 +596,7 @@ export function QrGenerator() {
     }
     const state = { type, form, color, bgTransparent, bgColor, shape, caption, ecLevel, printSize };
     const encoded = encodeState(state);
-    const url = `${window.location.origin}${window.location.pathname}?s=${encoded}`;
+    const url = `${window.location.origin}${window.location.pathname}#s=${encoded}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success("Link editor disalin — tempel di WA/email untuk berbagi");
