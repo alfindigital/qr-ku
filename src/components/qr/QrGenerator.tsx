@@ -1106,7 +1106,7 @@ export function QrGenerator() {
         <aside className="order-2 lg:order-2 lg:sticky lg:top-20 lg:self-start">
           <div className="space-y-4">
           <div className="rounded-xl border border-border/60 bg-card p-4 shadow-[var(--shadow-soft)] sm:p-5 lg:p-6">
-            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
               3. Hasil QR
             </h2>
             <div ref={wrapRef} className="flex flex-col items-center justify-center rounded-xl bg-muted p-4">
