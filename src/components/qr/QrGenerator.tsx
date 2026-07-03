@@ -85,14 +85,6 @@ const THEMES: Theme[] = [
     primaryForeground: "oklch(0.99 0.005 260)",
   },
   {
-    id: "ungu",
-    label: "Ungu",
-    hex: "#9333ea",
-    primary: "oklch(0.55 0.24 300)",
-    primaryGlow: "oklch(0.68 0.2 300)",
-    primaryForeground: "oklch(0.99 0.005 300)",
-  },
-  {
     id: "merah",
     label: "Merah",
     hex: "#dc2626",
