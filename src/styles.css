@@ -147,15 +147,16 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.45s ease, color 0.45s ease;
   }
 
   h1, h2, h3, .font-display {
-    font-family: "Space Grotesk", system-ui, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: "Bricolage Grotesque", "Manrope", system-ui, sans-serif;
+    letter-spacing: -0.035em;
+    font-weight: 700;
   }
 
   /* Smooth theme transition for all common color properties */
