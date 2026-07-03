@@ -5,7 +5,7 @@ export function BrandHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-5xl items-center gap-2.5 px-4">
         <BrandLogo />
-        <span className="font-display text-xl font-bold tracking-tight text-foreground">
+        <span className="font-display text-2xl font-extrabold tracking-[-0.045em] text-foreground">
           QRku
         </span>
         <div className="ml-auto flex items-center gap-2">

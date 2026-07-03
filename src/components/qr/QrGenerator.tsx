@@ -57,7 +57,6 @@ import {
   contrastRatio,
   decodeState,
   encodeState,
-  EC_LEVELS,
   PRINT_SIZES,
 } from "@/lib/qr-utils";
 
@@ -152,8 +151,8 @@ type DraftState = {
 
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
-  { id: "rounded", label: "Membulat" },
-  { id: "dots", label: "Bulat" },
+  { id: "rounded", label: "Sudut Tumpul" },
+  { id: "dots", label: "Titik Bulat" },
 ];
 
 type FormState = {
@@ -1081,7 +1080,7 @@ export function QrGenerator() {
                   <Label htmlFor="vcname">Nama Lengkap *</Label>
                   <Input
                     id="vcname"
-                    placeholder="Contoh: Alfin Digital"
+                    placeholder="Contoh: Budi Santoso"
                     value={form.vcName}
                     onChange={(e) => update("vcName", e.target.value)}
                     className="h-12 text-base"
@@ -1104,7 +1103,7 @@ export function QrGenerator() {
                       id="vcemail"
                       type="email"
                       inputMode="email"
-                      placeholder="nama@perusahaan.com"
+                      placeholder="budi@perusahaan.com"
                       value={form.vcEmail}
                       onChange={(e) => update("vcEmail", e.target.value)}
                     />
@@ -1115,7 +1114,7 @@ export function QrGenerator() {
                     <Label htmlFor="vcorg">Perusahaan / Organisasi</Label>
                     <Input
                       id="vcorg"
-                      placeholder="PT Contoh Sukses"
+                      placeholder="PT Maju Bersama"
                       value={form.vcOrg}
                       onChange={(e) => update("vcOrg", e.target.value)}
                     />
@@ -1124,7 +1123,7 @@ export function QrGenerator() {
                     <Label htmlFor="vctitle">Jabatan</Label>
                     <Input
                       id="vctitle"
-                      placeholder="Founder"
+                      placeholder="Manajer Pemasaran"
                       value={form.vcTitle}
                       onChange={(e) => update("vcTitle", e.target.value)}
                     />
@@ -1135,7 +1134,7 @@ export function QrGenerator() {
                   <Input
                     id="vcurl"
                     inputMode="url"
-                    placeholder="https://tokosaya.com"
+                    placeholder="https://perusahaan.com"
                     value={form.vcUrl}
                     onChange={(e) => update("vcUrl", e.target.value)}
                   />
@@ -1144,16 +1143,12 @@ export function QrGenerator() {
                   <Label htmlFor="vcaddr">Alamat</Label>
                   <Textarea
                     id="vcaddr"
-                    placeholder="Jl. Mawar No. 5, Jakarta"
+                    placeholder="Jl. Merdeka No. 10, Jakarta"
                     value={form.vcAddr}
                     onChange={(e) => update("vcAddr", e.target.value)}
                     rows={2}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Scan sekali → HP menawarkan simpan ke Kontak. Format vCard 3.0 standar,
-                  kompatibel iPhone & Android.
-                </p>
               </TabsContent>
             </Tabs>
           </section>
@@ -1343,32 +1338,6 @@ export function QrGenerator() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm">Kerapatan / ketahanan (EC level)</Label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {EC_LEVELS.map((ec) => (
-                        <button
-                          key={ec.id}
-                          type="button"
-                          onClick={() => setEcLevel(ec.id)}
-                          disabled={!!logo}
-                          title={ec.hint}
-                          className={`h-11 rounded-lg border-2 text-xs font-medium transition-colors disabled:opacity-50 ${
-                            (logo ? "H" : ecLevel) === ec.id
-                              ? "border-primary bg-primary/10 text-foreground"
-                              : "border-border bg-background text-muted-foreground"
-                          }`}
-                        >
-                          {ec.label}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      {logo
-                        ? "Otomatis Maksimum karena kamu pakai logo."
-                        : EC_LEVELS.find((e) => e.id === ecLevel)?.hint}
-                    </p>
-                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>
