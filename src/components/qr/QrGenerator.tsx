@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "@tanstack/react-router";
 import QRCodeStyling, {
   type DotType,
   type Options as QrOptions,
@@ -15,11 +16,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +37,6 @@ import {
   MapPin,
   Wifi,
   History,
-  Pencil,
   Save,
   Plus,
   User as UserIcon,
@@ -51,7 +46,7 @@ import {
   Link2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useQrHistory, type QrHistoryItem } from "@/hooks/use-qr-history";
+import { useQrHistory } from "@/hooks/use-qr-history";
 import {
   buildVCard,
   contrastRatio,
@@ -125,14 +120,6 @@ const THEMES: Theme[] = [
 
 const THEME_STORAGE_KEY = "qrku.theme";
 const DRAFT_KEY = "qrku:draft";
-const POPOVER_POS_KEY = "qrku:historyPopoverPos";
-
-type PopoverPos = "end" | "center" | "start";
-const POPOVER_POS_OPTIONS: { id: PopoverPos; label: string; title: string }[] = [
-  { id: "end", label: "Kanan", title: "Sejajar kanan tombol" },
-  { id: "center", label: "Tengah", title: "Di tengah tombol" },
-  { id: "start", label: "Kiri", title: "Sejajar kiri tombol" },
-];
 
 type DraftState = {
   type: ContentType;
@@ -151,7 +138,7 @@ type DraftState = {
 
 const SHAPES: { id: DotType; label: string }[] = [
   { id: "square", label: "Kotak" },
-  { id: "rounded", label: "Sudut Tumpul" },
+  { id: "rounded", label: "Tumpul" },
   { id: "dots", label: "Titik Bulat" },
 ];
 
@@ -420,18 +407,6 @@ export function QrGenerator() {
   const qrRef = useRef<QRCodeStyling | null>(null);
   const [qrSize, setQrSize] = useState(280);
 
-  const [popoverPos, setPopoverPos] = useState<PopoverPos>("end");
-  useEffect(() => {
-    const v = typeof window !== "undefined" ? localStorage.getItem(POPOVER_POS_KEY) : null;
-    if (v === "center" || v === "start" || v === "end") setPopoverPos(v);
-  }, []);
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(POPOVER_POS_KEY, popoverPos);
-    } catch {}
-  }, [hydrated, popoverPos]);
-
   useEffect(() => {
     if (!wrapRef.current) return;
     const ro = new ResizeObserver((entries) => {
@@ -659,15 +634,6 @@ export function QrGenerator() {
     }
   }
 
-  function loadFromHistory(item: QrHistoryItem) {
-    setType(item.type as ContentType);
-    setForm({ ...INITIAL_FORM, ...(item.form as Partial<FormState>) } as FormState);
-    setColor(item.color);
-    setShape(item.shape as DotType);
-    setCaption(item.caption);
-    toast.success("Riwayat dimuat");
-  }
-
   function handleSave() {
     if (!hasData) {
       toast.error("Isi dulu kontennya ya");
@@ -687,145 +653,21 @@ export function QrGenerator() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
-      {/* History popover - rendered into header slot to align with theme toggle */}
+      {/* History link — rendered into header slot to align with theme toggle */}
       <HeaderSlot>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 rounded-full"
-              title="Riwayat QR"
-            >
-              <History className="h-4 w-4" />
-              {history.items.length > 0 && (
-                <span className="ml-1 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
-                  {history.items.length}
-                </span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align={popoverPos}
-            sideOffset={8}
-            collisionPadding={8}
-            className="w-[min(92vw,360px)] p-3"
-          >
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <History className="h-3.5 w-3.5" />
-                Riwayat QR
-              </h2>
-              <div
-                role="group"
-                aria-label="Posisi popover"
-                className="flex items-center gap-0.5 rounded-full border border-border bg-muted/50 p-0.5"
-              >
-                {POPOVER_POS_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    title={opt.title}
-                    onClick={() => setPopoverPos(opt.id)}
-                    aria-pressed={popoverPos === opt.id}
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
-                      popoverPos === opt.id
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="mb-2 flex items-center justify-end">
-              {history.items.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("Hapus semua riwayat?")) history.clear();
-                  }}
-                  className="text-xs text-muted-foreground hover:text-destructive"
-                >
-                  Hapus semua
-                </button>
-              )}
-            </div>
-            {history.items.length === 0 ? (
-              <p className="py-6 text-center text-xs text-muted-foreground">
-                Belum ada riwayat. Klik tombol Simpan untuk menyimpan QR.
-              </p>
-            ) : (
-              <ul className="max-h-80 space-y-2 overflow-y-auto">
-                {history.items.map((it) => (
-                  <li
-                    key={it.id}
-                    className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2"
-                  >
-                    <div
-                      className="h-8 w-8 shrink-0 rounded"
-                      style={{ backgroundColor: it.color }}
-                      aria-hidden
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-foreground">
-                        {it.label}
-                      </p>
-                      <p className="truncate text-[11px] text-muted-foreground">
-                        {it.data}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground/70">
-                        {new Date(it.createdAt).toLocaleString("id-ID", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(it.data);
-                            toast.success("Teks disalin");
-                          } catch {
-                            toast.error("Gagal menyalin");
-                          }
-                        }}
-                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        title="Salin teks"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => loadFromHistory(it)}
-                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        title="Edit"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (confirm("Hapus riwayat ini?")) history.remove(it.id);
-                        }}
-                        className="rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-destructive"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </PopoverContent>
-        </Popover>
+        <Link
+          to="/history"
+          title="Riwayat QR"
+          aria-label="Riwayat QR"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-full border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          <History className="h-4 w-4" />
+          {history.items.length > 0 && (
+            <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
+              {history.items.length}
+            </span>
+          )}
+        </Link>
       </HeaderSlot>
 
       <div className="grid gap-5 sm:gap-6 lg:grid-cols-[1fr_360px]">
@@ -962,14 +804,11 @@ export function QrGenerator() {
                   onChange={(e) => update("phone", e.target.value)}
                   className="h-12 text-base"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Scan untuk langsung menelepon nomor ini.
-                </p>
               </TabsContent>
 
               <TabsContent value="geo" className="mt-4 space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="glink">Link Google Maps (opsional)</Label>
+                  <Label htmlFor="glink">Link Google Maps</Label>
                   <Input
                     id="glink"
                     placeholder="https://maps.google.com/?q=..."
@@ -977,31 +816,6 @@ export function QrGenerator() {
                     onChange={(e) => update("geoLink", e.target.value)}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="lat">Latitude</Label>
-                    <Input
-                      id="lat"
-                      inputMode="decimal"
-                      placeholder="-6.2088"
-                      value={form.geoLat}
-                      onChange={(e) => update("geoLat", e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lng">Longitude</Label>
-                    <Input
-                      id="lng"
-                      inputMode="decimal"
-                      placeholder="106.8456"
-                      value={form.geoLng}
-                      onChange={(e) => update("geoLng", e.target.value)}
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Jika link diisi, lat/lng diabaikan.
-                </p>
               </TabsContent>
 
               <TabsContent value="wifi" className="mt-4 space-y-3">
@@ -1014,9 +828,6 @@ export function QrGenerator() {
                     onChange={(e) => update("wifiSsid", e.target.value)}
                     className="h-12 text-base"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Contoh: MyCafe_WiFi
-                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="wpass">Password</Label>
@@ -1027,11 +838,11 @@ export function QrGenerator() {
                     onChange={(e) => update("wifiPass", e.target.value)}
                     disabled={form.wifiEnc === "nopass"}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {form.wifiEnc === "nopass"
-                      ? "Dinonaktifkan karena mode Tanpa Password dipilih."
-                      : "Contoh: cafepass123"}
-                  </p>
+                  {form.wifiEnc === "nopass" && (
+                    <p className="text-xs text-muted-foreground">
+                      Dinonaktifkan karena mode Tanpa Password dipilih.
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Tipe Keamanan</Label>
@@ -1311,10 +1122,6 @@ export function QrGenerator() {
                           </span>
                         </label>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">
-                        Tip: pilih background gelap + dot terang untuk QR dark mode. Sistem
-                        cek kontras otomatis.
-                      </p>
                     </div>
                   )}
 
