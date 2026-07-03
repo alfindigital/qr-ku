@@ -1339,32 +1339,6 @@ export function QrGenerator() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm">Kerapatan / ketahanan (EC level)</Label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {EC_LEVELS.map((ec) => (
-                        <button
-                          key={ec.id}
-                          type="button"
-                          onClick={() => setEcLevel(ec.id)}
-                          disabled={!!logo}
-                          title={ec.hint}
-                          className={`h-11 rounded-lg border-2 text-xs font-medium transition-colors disabled:opacity-50 ${
-                            (logo ? "H" : ecLevel) === ec.id
-                              ? "border-primary bg-primary/10 text-foreground"
-                              : "border-border bg-background text-muted-foreground"
-                          }`}
-                        >
-                          {ec.label}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      {logo
-                        ? "Otomatis Maksimum karena kamu pakai logo."
-                        : EC_LEVELS.find((e) => e.id === ecLevel)?.hint}
-                    </p>
-                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>
