@@ -916,7 +916,7 @@ export function QrGenerator() {
           </section>
 
           <section className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 lg:p-6">
-            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
               2. Atur tampilan
             </h2>
 
