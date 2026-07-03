@@ -28,7 +28,6 @@ import {
   Type,
   Download,
   Copy,
-  Share2,
   Upload,
   Trash2,
   ChevronDown,
@@ -37,7 +36,6 @@ import {
   MapPin,
   Wifi,
   History,
-  Save,
   Plus,
   User as UserIcon,
   FileText,
@@ -575,28 +573,6 @@ export function QrGenerator() {
     }
   }
 
-  async function handleShare() {
-    if (!hasData) {
-      toast.error("Isi dulu kontennya ya");
-      return;
-    }
-    try {
-      const canvas = await renderToCanvas(1024);
-      if (!canvas) return;
-      const blob: Blob = await new Promise((resolve) =>
-        canvas.toBlob((b) => resolve(b!), "image/png"),
-      );
-      const file = new File([blob], "qr-code.png", { type: "image/png" });
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "QR Code" });
-      } else {
-        toast.error("Bagikan tidak didukung di perangkat ini");
-      }
-    } catch {
-      // user cancelled
-    }
-  }
-
   function onLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -626,22 +602,6 @@ export function QrGenerator() {
     }
   }
 
-  function handleSave() {
-    if (!hasData) {
-      toast.error("Isi dulu kontennya ya");
-      return;
-    }
-    history.save({
-      type,
-      label: TAB_LABELS[type],
-      data,
-      color,
-      shape: String(shape),
-      caption,
-      form: { ...form },
-    });
-    toast.success("Tersimpan di riwayat");
-  }
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-4 sm:py-6 lg:py-10">
@@ -1184,19 +1144,20 @@ export function QrGenerator() {
               </div>
             )}
 
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="mt-4 flex items-center justify-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     disabled={!hasData}
-                    className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
+                    variant="outline"
+                    size="icon"
+                    className="h-11 w-11 shrink-0"
                     title="Download QR (PNG / SVG / PDF)"
                   >
-                    <Download className="h-5 w-5 shrink-0" />
-                    Unduh
+                    <Download className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuContent align="center" className="w-56">
                   <DropdownMenuItem onClick={handleDownloadPng}>
                     <ImageIcon className="mr-2 h-4 w-4" />
                     <div className="flex flex-col">
@@ -1224,44 +1185,23 @@ export function QrGenerator() {
                 onClick={handleCopy}
                 disabled={!hasData}
                 variant="outline"
-                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
-                title="Salin gambar"
+                size="icon"
+                className="h-11 w-11 shrink-0"
+                title="Salin gambar QR"
               >
-                <Copy className="h-5 w-5 shrink-0" />
-                Salin
+                <Copy className="h-5 w-5" />
               </Button>
               <Button
-                onClick={handleShare}
+                onClick={handleShareEditorUrl}
                 disabled={!hasData}
                 variant="outline"
-                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
-                title="Bagikan"
+                size="icon"
+                className="h-11 w-11 shrink-0"
+                title="Salin link editor"
               >
-                <Share2 className="h-5 w-5 shrink-0" />
-                Bagikan
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={!hasData}
-                variant="outline"
-                className="flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium leading-none"
-                title="Simpan ke riwayat"
-              >
-                <Save className="h-5 w-5 shrink-0" />
-                Simpan
+                <Link2 className="h-5 w-5" />
               </Button>
             </div>
-
-            <button
-              type="button"
-              onClick={handleShareEditorUrl}
-              disabled={!hasData}
-              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-md py-2 text-xs text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
-              title="Salin link editor untuk dibagikan ke tim"
-            >
-              <Link2 className="h-3.5 w-3.5" />
-              Salin link editor (untuk revisi bareng tim)
-            </button>
           </div>
           </div>
         </aside>
