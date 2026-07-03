@@ -611,14 +611,9 @@ export function QrGenerator() {
           to="/history"
           title="Riwayat QR"
           aria-label="Riwayat QR"
-          className="inline-flex h-9 items-center justify-center gap-1 rounded-full border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-input bg-background text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
         >
           <History className="h-4 w-4" />
-          {history.items.length > 0 && (
-            <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-5 text-primary-foreground">
-              {history.items.length}
-            </span>
-          )}
         </Link>
       </HeaderSlot>
 
