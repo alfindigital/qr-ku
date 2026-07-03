@@ -1075,7 +1075,7 @@ export function QrGenerator() {
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
                       maxLength={24}
-                      className="h-11"
+                      className="h-11 text-base"
                     />
                   </div>
 
