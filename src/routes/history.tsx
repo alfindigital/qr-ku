@@ -125,6 +125,7 @@ function HistoryPage() {
                     type="button"
                     onClick={() => copyText(it.data)}
                     className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    aria-label="Salin teks"
                     title="Salin teks"
                   >
                     <Copy className="h-4 w-4" />
@@ -133,6 +134,7 @@ function HistoryPage() {
                     type="button"
                     onClick={() => editItem(it)}
                     className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    aria-label="Muat ke editor"
                     title="Muat ke editor"
                   >
                     <Pencil className="h-4 w-4" />
@@ -143,6 +145,7 @@ function HistoryPage() {
                       if (confirm("Hapus riwayat ini?")) history.remove(it.id);
                     }}
                     className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-destructive"
+                    aria-label="Hapus"
                     title="Hapus"
                   >
                     <Trash2 className="h-4 w-4" />

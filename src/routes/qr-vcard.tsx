@@ -14,6 +14,20 @@ export const Route = createFileRoute("/qr-vcard")({
       { property: "og:type", content: "article" },
     ],
     links: [{ rel: "canonical", href: "https://qrku.alfindigital.com/qr-vcard" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: "QR Code Kartu Nama Digital (vCard)",
+          author: { "@type": "Organization", name: "QRku" },
+          publisher: { "@type": "Organization", name: "QRku" },
+          datePublished: "2026-01-01",
+          mainEntityOfPage: "https://qrku.alfindigital.com/qr-vcard",
+        }),
+      },
+    ],
   }),
 });
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://qrku.lovable.app";
+const BASE_URL = "https://qrku.alfindigital.com";
 
 interface SitemapEntry {
   path: string;
@@ -20,6 +20,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/qr-whatsapp", changefreq: "monthly", priority: "0.8" },
           { path: "/qr-menu-restoran", changefreq: "monthly", priority: "0.8" },
           { path: "/qr-vcard", changefreq: "monthly", priority: "0.8" },
+          { path: "/history", changefreq: "monthly", priority: "0.3" },
+          { path: "/seo-checklist", changefreq: "monthly", priority: "0.3" },
         ];
 
         const urls = entries.map((e) =>

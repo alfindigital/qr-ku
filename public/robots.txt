@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://qrku.lovable.app/sitemap.xml
+Sitemap: https://qrku.alfindigital.com/sitemap.xml

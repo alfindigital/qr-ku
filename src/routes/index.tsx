@@ -18,10 +18,31 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Buat QR Code dari link, WhatsApp, atau tulisan. Mudah dan cepat.",
       },
-      { property: "og:url", content: "https://qrku.lovable.app/" },
+      { property: "og:url", content: "https://qrku.alfindigital.com/" },
     ],
     links: [
-      { rel: "canonical", href: "https://qrku.lovable.app/" },
+      { rel: "canonical", href: "https://qrku.alfindigital.com/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "QRku",
+          url: "https://qrku.alfindigital.com/",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "QRku",
+          url: "https://qrku.alfindigital.com/",
+          logo: "https://qrku.alfindigital.com/favicon.svg",
+        }),
+      },
     ],
   }),
 });
