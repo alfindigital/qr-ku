@@ -16,6 +16,7 @@ import { Route as QrWhatsappRouteImport } from './routes/qr-whatsapp'
 import { Route as QrVcardRouteImport } from './routes/qr-vcard'
 import { Route as QrMenuRestoranRouteImport } from './routes/qr-menu-restoran'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as ContohQrCodeRouteImport } from './routes/contoh-qr-code'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -53,6 +54,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContohQrCodeRoute = ContohQrCodeRouteImport.update({
+  id: '/contoh-qr-code',
+  path: '/contoh-qr-code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -61,6 +67,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contoh-qr-code': typeof ContohQrCodeRoute
   '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contoh-qr-code': typeof ContohQrCodeRoute
   '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contoh-qr-code': typeof ContohQrCodeRoute
   '/history': typeof HistoryRoute
   '/qr-menu-restoran': typeof QrMenuRestoranRoute
   '/qr-vcard': typeof QrVcardRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/contoh-qr-code'
     | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/contoh-qr-code'
     | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/contoh-qr-code'
     | '/history'
     | '/qr-menu-restoran'
     | '/qr-vcard'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContohQrCodeRoute: typeof ContohQrCodeRoute
   HistoryRoute: typeof HistoryRoute
   QrMenuRestoranRoute: typeof QrMenuRestoranRoute
   QrVcardRoute: typeof QrVcardRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contoh-qr-code': {
+      id: '/contoh-qr-code'
+      path: '/contoh-qr-code'
+      fullPath: '/contoh-qr-code'
+      preLoaderRoute: typeof ContohQrCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContohQrCodeRoute: ContohQrCodeRoute,
   HistoryRoute: HistoryRoute,
   QrMenuRestoranRoute: QrMenuRestoranRoute,
   QrVcardRoute: QrVcardRoute,
@@ -208,13 +229,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
