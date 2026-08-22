@@ -16,6 +16,7 @@ export const Route = createFileRoute("/seo-checklist")({
         content:
           "On-page checklist for completing Google Search Console OAuth setup and fixing the remaining SEO finding for QRku.",
       },
+      { name: "robots", content: "noindex" },
     ],
   }),
 });
