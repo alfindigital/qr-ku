@@ -142,20 +142,15 @@ function RootComponent() {
         <Outlet />
         <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t-2 border-brand px-3 py-3 sm:gap-x-2.5">
           <span className="text-[11px] text-muted-foreground">
-            by <span className="font-medium text-foreground">@alfindigital</span>
+            Open Source &bull; MIT License
           </span>
           <span className="text-[11px] text-muted-foreground">|</span>
-          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" aria-label="Website alfindigital.com" title="alfindigital.com" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
-            <Globe className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
-          </a>
-          <a href="https://x.com/alfindigital" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter) @alfindigital" title="X @alfindigital" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25h6.83l4.713 6.231 5.447-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z"/></svg>
-          </a>
-          <a href="https://t.me/alfindigitalcom" target="_blank" rel="noopener noreferrer" aria-label="Telegram @alfindigitalcom" title="Telegram @alfindigitalcom" className="inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary">
-            <Send className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
-          </a>
+          
+          
+          
         </footer>
       </div>
     </QueryClientProvider>
   );
 }
+
