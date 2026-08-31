@@ -82,7 +82,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "QRku — QR Code Generator Gratis untuk UMKM" },
       { name: "twitter:description", content: "Buat QR Code dari link, WhatsApp, atau tulisan. Mudah, cepat, dan gratis." },
-      { name: "google-site-verification", content: "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw" },
     ],
     links: [
       {
@@ -153,4 +152,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
 
