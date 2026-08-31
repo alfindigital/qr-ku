@@ -1,6 +1,7 @@
 {
-  "name": "tanstack_start_ts",
-  "private": true,
+  "name": "qr-ku",
+  "private": false,
+  "license": "MIT",
   "sideEffects": false,
   "type": "module",
   "scripts": {
@@ -88,3 +89,4 @@
     "vite": "^7.3.1"
   }
 }
+
