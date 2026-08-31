@@ -260,7 +260,7 @@ const TAB_LABELS: Record<ContentType, string> = {
   phone: "Telepon",
   geo: "Lokasi",
   wifi: "WiFi",
-  vcard: "Kartu Nama",
+  vcard: "Kartu",
 };
 
 export function QrGenerator() {
@@ -640,7 +640,7 @@ export function QrGenerator() {
                 </TabsTrigger>
                 <TabsTrigger value="vcard" className="flex h-11 flex-col gap-0.5 text-xs">
                   <UserIcon className="h-4 w-4" />
-                  Kartu Nama
+                  Kartu
                 </TabsTrigger>
                 <TabsTrigger value="text" className="flex h-11 flex-col gap-0.5 text-xs">
                   <Type className="h-4 w-4" />
